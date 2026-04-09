@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CodeCraft Solutions – Modern Websites for Local Businesses</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --surface2: #16161f;
+      --accent: #4f8eff;
+      --accent2: #a259ff;
+      --gold: #f5c842;
+      --text: #e8e8f0;
+      --muted: #7a7a9a;
+      --border: rgba(255,255,255,0.07);
+      --card-bg: rgba(255,255,255,0.03);
+      --gradient: linear-gradient(135deg, #4f8eff, #a259ff);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+    h1,h2,h3,h4 { font-family: 'Syne', sans-serif; line-height: 1.2; }
+
+    /* ─── NOISE OVERLAY ─── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.5;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 6%;
+      background: rgba(10,10,15,0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.3rem; font-weight: 800;
+      background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 0.9rem; font-weight: 500;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      background: var(--gradient); color: #fff; border: none;
+      padding: .55rem 1.4rem; border-radius: 50px; font-size: 0.85rem;
+      font-family: 'Syne', sans-serif; font-weight: 600; cursor: pointer;
+      text-decoration: none; transition: opacity .2s, transform .2s;
+    }
+    .nav-cta:hover { opacity: .85; transform: translateY(-1px); }
+
+    /* ─── HERO ─── */
+    #hero {
+      position: relative; min-height: 100vh;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; padding: 8rem 6% 5rem;
+      overflow: hidden;
+    }
+    .hero-orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(90px); pointer-events: none;
+    }
+    .hero-orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(79,142,255,0.18) 0%, transparent 70%);
+      top: -100px; left: -100px;
+      animation: orbFloat 8s ease-in-out infinite alternate;
+    }
+    .hero-orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(162,89,255,0.15) 0%, transparent 70%);
+      bottom: -80px; right: -80px;
+      animation: orbFloat 10s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes orbFloat { from { transform: translate(0,0); } to { transform: translate(30px, -30px); } }
+
+    .hero-badge {
+      display: inline-block;
+      border: 1px solid rgba(79,142,255,0.4);
+      background: rgba(79,142,255,0.08);
+      color: #90b8ff; font-size: 0.78rem; font-weight: 600; letter-spacing: .1em;
+      text-transform: uppercase; padding: .35rem 1.1rem; border-radius: 50px;
+      margin-bottom: 1.5rem;
+      animation: fadeUp .7s ease both;
+    }
+    .hero-title {
+      font-size: clamp(2.6rem, 6vw, 5rem);
+      font-weight: 800; letter-spacing: -.02em;
+      line-height: 1.08;
+      animation: fadeUp .8s .1s ease both;
+    }
+    .hero-title .grad {
+      background: var(--gradient);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-sub {
+      max-width: 580px; margin: 1.5rem auto 2.5rem;
+      color: var(--muted); font-size: 1.05rem; line-height: 1.75;
+      animation: fadeUp .8s .2s ease both;
+    }
+    .hero-btns {
+      display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+      animation: fadeUp .8s .3s ease both;
+    }
+    .btn-primary {
+      background: var(--gradient); color: #fff;
+      padding: .85rem 2.2rem; border-radius: 50px;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
+      text-decoration: none; border: none; cursor: pointer;
+      transition: transform .2s, box-shadow .2s;
+      box-shadow: 0 8px 30px rgba(79,142,255,0.3);
+    }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(79,142,255,0.45); }
+    .btn-ghost {
+      background: transparent; color: var(--text);
+      padding: .85rem 2.2rem; border-radius: 50px;
+      font-family: 'Syne', sans-serif; font-weight: 600; font-size: 1rem;
+      text-decoration: none; border: 1px solid var(--border); cursor: pointer;
+      transition: border-color .2s, transform .2s;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,0.25); transform: translateY(-2px); }
+
+    .hero-stats {
+      display: flex; gap: 3rem; justify-content: center; flex-wrap: wrap;
+      margin-top: 4rem;
+      animation: fadeUp .8s .45s ease both;
+    }
+    .stat { text-align: center; }
+    .stat-num {
+      font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800;
+      background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { color: var(--muted); font-size: .82rem; margin-top: .2rem; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── SECTIONS COMMON ─── */
+    section { position: relative; z-index: 1; padding: 6rem 6%; }
+    .section-label {
+      display: inline-block; font-size: .75rem; letter-spacing: .14em; text-transform: uppercase;
+      color: #90b8ff; font-weight: 600; margin-bottom: .8rem;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 800;
+      margin-bottom: 1rem;
+    }
+    .section-sub { color: var(--muted); max-width: 560px; font-size: 1rem; margin-bottom: 3rem; }
+
+    /* ─── SERVICES ─── */
+    #services { background: var(--surface); }
+    .services-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem; margin-top: 3rem;
+    }
+    .service-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 20px; padding: 2rem;
+      transition: transform .3s, border-color .3s, box-shadow .3s;
+      cursor: default;
+    }
+    .service-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(79,142,255,0.35);
+      box-shadow: 0 20px 50px rgba(79,142,255,0.1);
+    }
+    .service-icon {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: var(--gradient);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; margin-bottom: 1.3rem;
+    }
+    .service-card h3 { font-size: 1.15rem; margin-bottom: .7rem; }
+    .service-card p { color: var(--muted); font-size: .93rem; line-height: 1.7; }
+    .service-features { margin-top: 1.1rem; list-style: none; }
+    .service-features li {
+      color: var(--muted); font-size: .87rem; padding: .25rem 0;
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .service-features li::before { content: '✦'; color: var(--accent); font-size: .65rem; }
+
+    /* ─── PACKAGES ─── */
+    #packages { background: var(--bg); }
+    .packages-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem; margin-top: 3rem; align-items: start;
+    }
+    .package-card {
+      border: 1px solid var(--border);
+      border-radius: 24px; padding: 2.2rem;
+      background: var(--card-bg);
+      position: relative; transition: transform .3s;
+    }
+    .package-card:hover { transform: translateY(-5px); }
+    .package-card.featured {
+      border-color: rgba(79,142,255,0.5);
+      background: rgba(79,142,255,0.05);
+      box-shadow: 0 0 0 1px rgba(79,142,255,0.2), 0 30px 60px rgba(79,142,255,0.12);
+    }
+    .featured-badge {
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+      background: var(--gradient); color: #fff;
+      font-size: .72rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      padding: .3rem 1.1rem; border-radius: 50px;
+    }
+    .pkg-name {
+      font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+      color: var(--muted); letter-spacing: .08em; text-transform: uppercase;
+    }
+    .pkg-price {
+      font-family: 'Syne', sans-serif; font-size: 2.5rem; font-weight: 800;
+      margin: .5rem 0 .2rem; line-height: 1;
+    }
+    .pkg-price span { font-size: 1.1rem; font-weight: 500; color: var(--muted); }
+    .pkg-tagline { color: var(--muted); font-size: .88rem; margin-bottom: 1.5rem; }
+    .pkg-divider { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+    .pkg-features { list-style: none; display: flex; flex-direction: column; gap: .7rem; }
+    .pkg-features li {
+      display: flex; align-items: flex-start; gap: .6rem; font-size: .9rem; color: var(--muted);
+    }
+    .pkg-features li .check { color: #4ade80; font-size: .8rem; margin-top: .2rem; flex-shrink: 0; }
+    .pkg-features li strong { color: var(--text); }
+    .pkg-btn {
+      display: block; text-align: center; margin-top: 2rem;
+      padding: .8rem 1.5rem; border-radius: 50px;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: .9rem;
+      text-decoration: none; cursor: pointer; border: none;
+      transition: transform .2s, opacity .2s;
+    }
+    .pkg-btn-outline {
+      background: transparent; color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .pkg-btn-primary {
+      background: var(--gradient); color: #fff;
+      box-shadow: 0 8px 25px rgba(79,142,255,0.3);
+    }
+    .pkg-btn:hover { transform: translateY(-2px); opacity: .9; }
+
+    /* ─── SAMPLE WORK ─── */
+    #work { background: var(--surface); }
+    .work-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.8rem; margin-top: 3rem;
+    }
+    .work-card {
+      border-radius: 20px; overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      transition: transform .3s, box-shadow .3s;
+    }
+    .work-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+    }
+    .work-preview {
+      width: 100%; height: 220px; position: relative; overflow: hidden;
+      background: var(--surface2);
+    }
+    .work-preview iframe {
+      width: 200%; height: 200%;
+      transform: scale(0.5); transform-origin: top left;
+      border: none; pointer-events: none;
+    }
+    .work-preview .preview-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 60%, var(--surface2) 100%);
+    }
+    .work-info { padding: 1.5rem; }
+    .work-tag {
+      font-size: .72rem; letter-spacing: .1em; text-transform: uppercase;
+      color: #90b8ff; font-weight: 600; margin-bottom: .5rem;
+    }
+    .work-info h3 { font-size: 1.1rem; margin-bottom: .4rem; }
+    .work-info p { color: var(--muted); font-size: .87rem; }
+    .work-chips { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .9rem; }
+    .chip {
+      font-size: .72rem; padding: .2rem .7rem; border-radius: 50px;
+      background: rgba(79,142,255,0.1); color: #90b8ff; border: 1px solid rgba(79,142,255,0.2);
+    }
+
+    /* ─── CONTACT ─── */
+    #contact { background: var(--bg); }
+    .contact-wrap {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 4rem; align-items: start; max-width: 1000px; margin: 0 auto;
+    }
+    .contact-info h2 { font-size: 2rem; margin-bottom: 1rem; }
+    .contact-info p { color: var(--muted); font-size: .97rem; margin-bottom: 2rem; }
+    .contact-methods { display: flex; flex-direction: column; gap: 1rem; }
+    .contact-method {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1rem 1.4rem; border-radius: 14px;
+      border: 1px solid var(--border); background: var(--card-bg);
+      text-decoration: none; color: var(--text);
+      transition: border-color .2s, transform .2s;
+    }
+    .contact-method:hover { border-color: rgba(79,142,255,0.4); transform: translateX(4px); }
+    .method-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
+    .method-wa { background: rgba(37,211,102,0.15); }
+    .method-mail { background: rgba(79,142,255,0.15); }
+    .method-label { font-size: .75rem; color: var(--muted); }
+    .method-value { font-size: .9rem; font-weight: 500; }
+
+    .contact-form {
+      background: var(--card-bg); border: 1px solid var(--border);
+      border-radius: 24px; padding: 2.5rem;
+    }
+    .contact-form h3 { font-size: 1.2rem; margin-bottom: 1.5rem; }
+    .form-group { margin-bottom: 1.2rem; }
+    .form-group label {
+      display: block; font-size: .82rem; color: var(--muted); font-weight: 500;
+      margin-bottom: .45rem; letter-spacing: .04em;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%; background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: .75rem 1rem; color: var(--text); font-family: 'DM Sans', sans-serif;
+      font-size: .93rem; outline: none; resize: vertical;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: rgba(79,142,255,0.5);
+      box-shadow: 0 0 0 3px rgba(79,142,255,0.1);
+    }
+    .form-group textarea { min-height: 110px; }
+    .form-submit {
+      width: 100%; padding: .9rem; border-radius: 50px;
+      background: var(--gradient); color: #fff; border: none;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem;
+      cursor: pointer; transition: opacity .2s, transform .2s;
+      box-shadow: 0 8px 25px rgba(79,142,255,0.3);
+    }
+    .form-submit:hover { opacity: .9; transform: translateY(-2px); }
+    .form-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .form-msg {
+      margin-top: 1rem; padding: .8rem 1rem; border-radius: 10px;
+      font-size: .88rem; display: none;
+    }
+    .form-msg.success { background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.25); }
+    .form-msg.error { background: rgba(248,113,113,0.1); color: #f87171; border: 1px solid rgba(248,113,113,0.25); }
+    .form-msg.show { display: block; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      text-align: center; padding: 2.5rem 6%; border-top: 1px solid var(--border);
+      color: var(--muted); font-size: .85rem;
+    }
+    footer span { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
+
+    /* ─── SCROLL REVEAL ─── */
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav .nav-links { display: none; }
+      .contact-wrap { grid-template-columns: 1fr; gap: 2.5rem; }
+      .hero-stats { gap: 2rem; }
+      section { padding: 4.5rem 5%; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─────────── NAV ─────────── -->
+<nav>
+  <a class="nav-logo" href="#">CodeCraft Solutions</a>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#packages">Packages</a></li>
+    <li><a href="#work">Work</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a class="nav-cta" href="#contact">Get Free Demo</a>
+</nav>
+
+<!-- ─────────── HERO ─────────── -->
+<section id="hero">
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+
+  <div class="hero-badge">🚀 &nbsp;Web Solutions for Local Businesses</div>
+
+  <h1 class="hero-title">
+    Your Business Deserves<br/>
+    a <span class="grad">Modern Website</span>
+  </h1>
+
+  <p class="hero-sub">
+    We build fast, beautiful, mobile-friendly websites for restaurants, salons, gyms, and local businesses — so you get more customers, more orders, and more growth.
+  </p>
+
+  <div class="hero-btns">
+    <a href="#contact" class="btn-primary">✦ Get Your Free Demo</a>
+    <a href="#work" class="btn-ghost">See Our Work →</a>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat">
+      <div class="stat-num">10+</div>
+      <div class="stat-label">Projects Delivered</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Mobile Friendly</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">3 Days</div>
+      <div class="stat-label">Average Turnaround</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">⭐ 5.0</div>
+      <div class="stat-label">Client Satisfaction</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── SERVICES ─────────── -->
+<section id="services">
+  <div class="reveal">
+    <div class="section-label">What We Do</div>
+    <h2 class="section-title">Everything Your Business Needs Online</h2>
+    <p class="section-sub">From a quick landing page to a full business website — we handle it all, so you can focus on running your business.</p>
+  </div>
+
+  <div class="services-grid">
+    <div class="service-card reveal">
+      <div class="service-icon">🎯</div>
+      <h3>Landing Pages</h3>
+      <p>High-converting single-page sites designed to capture leads, showcase offers, and drive action — fast.</p>
+      <ul class="service-features">
+        <li>Custom design tailored to your brand</li>
+        <li>Call-to-action buttons & WhatsApp integration</li>
+        <li>Google Maps & social media links</li>
+        <li>Delivered in 2–3 business days</li>
+      </ul>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-icon">🌐</div>
+      <h3>Full Business Websites</h3>
+      <p>Multi-page websites that tell your full story — from your menu and gallery to reviews and booking.</p>
+      <ul class="service-features">
+        <li>Up to 5 fully designed pages</li>
+        <li>Mobile-first, blazing fast</li>
+        <li>Menu / Services / Gallery sections</li>
+        <li>SEO basics included</li>
+      </ul>
+    </div>
+    <div class="service-card reveal">
+      <div class="service-icon">🔧</div>
+      <h3>Bug Fixing & Maintenance</h3>
+      <p>Got a broken website? We diagnose and fix it quickly — and keep it running smoothly going forward.</p>
+      <ul class="service-features">
+        <li>Quick turnaround bug fixes</li>
+        <li>Content & image updates</li>
+        <li>Performance optimization</li>
+        <li>Ongoing monthly support plans</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── PACKAGES ─────────── -->
+<section id="packages">
+  <div class="reveal">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">Simple, Transparent Packages</h2>
+    <p class="section-sub">No hidden costs. Pick the plan that fits your business — and upgrade anytime.</p>
+  </div>
+
+  <div class="packages-grid">
+
+    <!-- STARTER -->
+    <div class="package-card reveal">
+      <div class="pkg-name">Starter</div>
+      <div class="pkg-price">₹5,000 <span>one-time</span></div>
+      <div class="pkg-tagline">Perfect for getting your first professional online presence</div>
+      <hr class="pkg-divider"/>
+      <ul class="pkg-features">
+        <li><span class="check">✔</span> <div><strong>1-page Landing Page</strong><br/>Clean, mobile-friendly design</div></li>
+        <li><span class="check">✔</span> <div><strong>WhatsApp CTA button</strong><br/>Let customers contact you instantly</div></li>
+        <li><span class="check">✔</span> <div><strong>Google Maps embed</strong><br/>Help customers find you</div></li>
+        <li><span class="check">✔</span> <div><strong>Social media links</strong></div></li>
+        <li><span class="check">✔</span> <div><strong>2–3 day delivery</strong></div></li>
+      </ul>
+      <a href="#contact" class="pkg-btn pkg-btn-outline">Get Started →</a>
+    </div>
+
+    <!-- BUSINESS -->
+    <div class="package-card featured reveal">
+      <div class="featured-badge">⭐ Most Popular</div>
+      <div class="pkg-name">Business</div>
+      <div class="pkg-price">₹9,000 <span>one-time</span></div>
+      <div class="pkg-tagline">For businesses ready to grow with a full online presence</div>
+      <hr class="pkg-divider"/>
+      <ul class="pkg-features">
+        <li><span class="check">✔</span> <div><strong>Up to 4-page Website</strong><br/>Home, Menu/Services, About, Contact</div></li>
+        <li><span class="check">✔</span> <div><strong>Custom design + branding</strong></div></li>
+        <li><span class="check">✔</span> <div><strong>Gallery / Menu section</strong></div></li>
+        <li><span class="check">✔</span> <div><strong>WhatsApp & Contact form</strong></div></li>
+        <li><span class="check">✔</span> <div><strong>SEO basics included</strong></div></li>
+        <li><span class="check">✔</span> <div><strong>3 months free maintenance</strong><br/>Content & image updates at no extra cost</div></li>
+        <li><span class="check">✔</span> <div><strong>5–7 day delivery</strong></div></li>
+      </ul>
+      <a href="#contact" class="pkg-btn pkg-btn-primary">Get Started →</a>
+    </div>
+
+    <!-- PRO -->
+    <div class="package-card reveal">
+      <div class="pkg-name">Pro</div>
+      <div class="pkg-price">₹13,000 <span>one-time</span></div>
+      <div class="pkg-tagline">Full-featured solution for ambitious local businesses</div>
+      <hr class="pkg-divider"/>
+      <ul class="pkg-features">
+        <li><span class="check">✔</span> <div><strong>Up to 6-page Website</strong><br/>Complete business presence</div></li>
+        <li><span class="check">✔</span> <div><strong>Premium custom design</strong></div></li>
+        <li><span class="check">✔</span> <div><strong>Online menu / booking ready</strong></div></li>
+        <li><span class="check">✔</span> <div><strong>WhatsApp, Contact form & maps</strong></div></li>
+        <li><span class="check">✔</span> <div><strong>Advanced SEO setup</strong></div></li>
+        <li><span class="check">✔</span> <div><strong>Speed & performance tuning</strong></div></li>
+        <li><span class="check">✔</span> <div><strong>6 months free maintenance</strong><br/>Add/edit any content free for 6 months</div></li>
+        <li><span class="check">✔</span> <div><strong>7–10 day delivery</strong></div></li>
+      </ul>
+      <a href="#contact" class="pkg-btn pkg-btn-outline">Get Started →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── SAMPLE WORK ─────────── -->
+<section id="work">
+  <div class="reveal">
+    <div class="section-label">Portfolio</div>
+    <h2 class="section-title">Real Websites. Real Results.</h2>
+    <p class="section-sub">Live projects we've built for local businesses — mobile-optimized, fast, and built to convert.</p>
+  </div>
+
+  <div class="work-grid">
+
+    <!-- Project 1 -->
+    <div class="work-card reveal">
+      <div class="work-preview">
+        <iframe src="https://paradise-restarunt-perundurai.vercel.app/" title="Paradise Restaurant" loading="lazy" scrolling="no"></iframe>
+        <div class="preview-overlay"></div>
+      </div>
+      <div class="work-info">
+        <div class="work-tag">🍽️ Restaurant</div>
+        <h3>Paradise Restaurant, Perundurai</h3>
+        <p>A vibrant restaurant website with menu showcase, location map, and WhatsApp order integration — built to drive foot traffic.</p>
+        <div class="work-chips">
+          <span class="chip">Landing Page</span>
+          <span class="chip">Mobile First</span>
+          <span class="chip">WhatsApp CTA</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project 2 -->
+    <div class="work-card reveal">
+      <div class="work-preview">
+        <iframe src="https://mayabazzar-restaurant-lr5f.vercel.app/" title="Maya Bazzar Restaurant" loading="lazy" scrolling="no"></iframe>
+        <div class="preview-overlay"></div>
+      </div>
+      <div class="work-info">
+        <div class="work-tag">🍱 Restaurant</div>
+        <h3>Maya Bazzar Restaurant</h3>
+        <p>Full restaurant website with digital menu, gallery, and seamless customer contact — crafted to increase online orders.</p>
+        <div class="work-chips">
+          <span class="chip">Full Website</span>
+          <span class="chip">Menu Section</span>
+          <span class="chip">Gallery</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Project 3 -->
+    <div class="work-card reveal">
+      <div class="work-preview">
+        <iframe src="https://adventuretrip-drab.vercel.app/" title="Adventure Trip" loading="lazy" scrolling="no"></iframe>
+        <div class="preview-overlay"></div>
+      </div>
+      <div class="work-info">
+        <div class="work-tag">🏕️ Travel & Adventure</div>
+        <h3>Adventure Trip</h3>
+        <p>An immersive travel experience landing page with trip packages, booking CTA, and stunning visuals — designed to sell adventures.</p>
+        <div class="work-chips">
+          <span class="chip">Landing Page</span>
+          <span class="chip">Booking CTA</span>
+          <span class="chip">Responsive</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─────────── CONTACT ─────────── -->
+<section id="contact">
+  <div class="contact-wrap">
+    <div class="contact-info reveal">
+      <div class="section-label">Let's Talk</div>
+      <h2>Ready to Get Your Website?</h2>
+      <p>Tell us about your business and we'll get back to you within a few hours. Or reach out directly — we're just a WhatsApp message away.</p>
+
+      <div class="contact-methods">
+        <a class="contact-method" href="https://wa.me/916382639957" target="_blank" rel="noopener">
+          <div class="method-icon method-wa">💬</div>
+          <div>
+            <div class="method-label">WhatsApp Us</div>
+            <div class="method-value">+91 63826 39957</div>
+          </div>
+        </a>
+        <a class="contact-method" href="mailto:deepakmanjunathan33@gmail.com">
+          <div class="method-icon method-mail">✉️</div>
+          <div>
+            <div class="method-label">Email Us</div>
+            <div class="method-value">deepakmanjunathan33@gmail.com</div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <div class="contact-form reveal">
+      <h3>Send a Message</h3>
+      <div class="form-group">
+        <label>Your Name</label>
+        <input type="text" id="fname" placeholder="e.g. Ravi Kumar" />
+      </div>
+      <div class="form-group">
+        <label>Business Name</label>
+        <input type="text" id="fbusiness" placeholder="e.g. Sri Krishna Hotel" />
+      </div>
+      <div class="form-group">
+        <label>Email Address</label>
+        <input type="email" id="femail" placeholder="your@email.com" />
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea id="fmessage" placeholder="Tell us about your business and what kind of website you need..."></textarea>
+      </div>
+      <button class="form-submit" id="sendBtn" onclick="sendMessage()">Send Message ✦</button>
+      <div class="form-msg" id="formMsg"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── FOOTER ─────────── -->
+<footer>
+  <p>© 2025 <span>CodeCraft Solutions</span> · Built with ❤️ for local businesses · Chennai, India</p>
+</footer>
+
+<script>
+  // ─── SCROLL REVEAL ───
+  const revealEls = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.1 });
+  revealEls.forEach(el => observer.observe(el));
+
+  // ─── CONTACT FORM → RESEND API ───
+  async function sendMessage() {
+    const name     = document.getElementById('fname').value.trim();
+    const business = document.getElementById('fbusiness').value.trim();
+    const email    = document.getElementById('femail').value.trim();
+    const message  = document.getElementById('fmessage').value.trim();
+    const btn      = document.getElementById('sendBtn');
+    const msg      = document.getElementById('formMsg');
+
+    msg.className = 'form-msg';
+    msg.style.display = 'none';
+
+    if (!name || !business || !message) {
+      msg.textContent = '⚠️ Please fill in your name, business name, and message.';
+      msg.className = 'form-msg error show';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    try {
+      const res = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer re_VtZpLZhQ_ADY3B78G6ofrqvEJGrABn8Px'
+        },
+        body: JSON.stringify({
+          from: 'CodeCraft Contact <onboarding@resend.dev>',
+          to: ['deepakmanjunathan33@gmail.com'],
+          subject: `New Enquiry from ${name} — ${business}`,
+          html: `
+            <div style="font-family:sans-serif;max-width:520px;margin:auto;padding:30px;border:1px solid #eee;border-radius:12px;">
+              <h2 style="color:#4f8eff;margin-bottom:20px;">📬 New Website Enquiry</h2>
+              <table style="width:100%;border-collapse:collapse;">
+                <tr><td style="padding:8px 0;color:#888;width:130px;">Name</td><td style="padding:8px 0;font-weight:600;">${name}</td></tr>
+                <tr><td style="padding:8px 0;color:#888;">Business</td><td style="padding:8px 0;font-weight:600;">${business}</td></tr>
+                <tr><td style="padding:8px 0;color:#888;">Email</td><td style="padding:8px 0;">${email || 'Not provided'}</td></tr>
+              </table>
+              <hr style="margin:20px 0;border:none;border-top:1px solid #eee;"/>
+              <p style="color:#888;margin-bottom:8px;">Message:</p>
+              <p style="background:#f9f9f9;padding:16px;border-radius:8px;line-height:1.7;">${message.replace(/\n/g,'<br/>')}</p>
+              <p style="color:#aaa;font-size:12px;margin-top:24px;">Sent via CodeCraft Solutions contact form</p>
+            </div>
+          `
+        })
+      });
+
+      if (res.ok) {
+        msg.textContent = '✅ Message sent! We\'ll get back to you within a few hours.';
+        msg.className = 'form-msg success show';
+        document.getElementById('fname').value = '';
+        document.getElementById('fbusiness').value = '';
+        document.getElementById('femail').value = '';
+        document.getElementById('fmessage').value = '';
+      } else {
+        const err = await res.json();
+        throw new Error(err.message || 'Failed to send');
+      }
+    } catch (e) {
+      msg.textContent = '❌ Something went wrong. Please WhatsApp us directly at +91 63826 39957.';
+      msg.className = 'form-msg error show';
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Send Message ✦';
+  }
+</script>
+</body>
+</html>
