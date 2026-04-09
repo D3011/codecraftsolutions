@@ -768,7 +768,7 @@
           <label for="f-msg">Message</label>
           <textarea id="f-msg" rows="4" placeholder="Tell us a bit about your business and what you need..."></textarea>
         </div>
-        <button class="form-submit" id="submit-btn" onclick="sendEnquiry()">Send Enquiry →</button>
+        <button type="submit" class="form-submit">Send Enquiry →</button>
         <div id="form-status"></div>
       </div>
     </div>
@@ -783,24 +783,7 @@
 </footer>
 
 <script>
-async function sendEnquiry() {
-  const btn = document.getElementById('submit-btn');
-  const status = document.getElementById('form-status');
-  status.className = '';
-  status.style.display = 'none';
-
-  const name = document.getElementById('f-name').value.trim();
-  const phone = document.getElementById('f-phone').value.trim();
-  const biz = document.getElementById('f-biz').value.trim();
-  const type = document.getElementById('f-type').value;
-  const pkg = document.getElementById('f-pkg').value;
-  const msg = document.getElementById('f-msg').value.trim();
-
-  if (!name || !biz || !msg) {
-    status.textContent = 'Please fill in your name, business name, and message.';
-    status.className = 'error';
-    return;
-  }
+async 
 
   btn.disabled = true;
   btn.textContent = 'Sending…';
