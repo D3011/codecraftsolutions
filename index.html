@@ -311,6 +311,26 @@ tr:hover td{background:var(--surface2)}
 .cc-lead-actions{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
 .edit-modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 @media(max-width:600px){.edit-modal-grid{grid-template-columns:1fr}}
+.cc-has-website-badge{position:absolute;top:12px;right:12px;font-size:10px;font-weight:700;
+  padding:3px 8px;border-radius:10px;background:rgba(45,219,164,.15);color:var(--teal);
+  border:1px solid rgba(45,219,164,.25)}
+.cc-needs-dev-badge{position:absolute;top:12px;right:12px;font-size:10px;font-weight:700;
+  padding:3px 8px;border-radius:10px;background:rgba(255,179,71,.15);color:var(--amber);
+  border:1px solid rgba(255,179,71,.25)}
+.cc-lead-card.selected-for-share{border-color:var(--accent);background:rgba(124,111,255,.07)}
+.cc-lead-card .share-checkbox{position:absolute;top:12px;left:12px;width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
+.share-bar{position:sticky;bottom:12px;z-index:50;background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:var(--radius);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;
+  gap:12px;flex-wrap:wrap;box-shadow:0 4px 24px rgba(124,111,255,.35);margin-top:16px}
+.share-bar span{font-size:13px;font-weight:600;color:#fff}
+.share-bar .share-bar-btns{display:flex;gap:8px}
+.shared-leads-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:10px;
+  font-size:10px;font-weight:700;background:rgba(45,219,164,.15);color:var(--teal);border:1px solid rgba(45,219,164,.3)}
+.cc-tab-bar{display:flex;gap:6px;margin-bottom:16px}
+.cc-tab{padding:7px 16px;border-radius:20px;border:1px solid var(--border);background:var(--surface);
+  color:var(--text3);font-size:12px;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif}
+.cc-tab.active{background:rgba(124,111,255,.15);color:var(--accent2);border-color:rgba(124,111,255,.4)}
+.needs-dev-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
 
 /* ── DESKTOP ENHANCEMENTS ── */
 @media(min-width:1200px){
@@ -785,8 +805,17 @@ tr:hover td{background:var(--surface2)}
     <div class="page" id="page-cc">
       <div class="page-header" style="margin-bottom:16px">
         <h2 style="font-family:'Syne',sans-serif;font-weight:700">Collect Clients <span style="font-size:13px;color:var(--accent2);font-family:'DM Sans',sans-serif;font-weight:500;margin-left:8px">AI-Powered Lead Discovery</span></h2>
-        <p style="color:var(--text3);font-size:13px;margin-top:4px">Find businesses without websites on Google Maps — ready for outreach</p>
+        <p style="color:var(--text3);font-size:13px;margin-top:4px">Discover business leads — find who needs a website, capture existing sites, and log clients seeking a developer</p>
       </div>
+
+      <!-- Tab Bar -->
+      <div class="cc-tab-bar">
+        <button class="cc-tab active" id="cc-tab-find" onclick="switchCCTab('find')">🔍 AI Lead Discovery</button>
+        <button class="cc-tab" id="cc-tab-manual" onclick="switchCCTab('manual')">✍️ Needs Website Dev</button>
+      </div>
+
+      <!-- ── TAB: AI Lead Discovery ── -->
+      <div id="cc-panel-find">
 
       <!-- Filter Card -->
       <div class="card" style="margin-bottom:16px">
@@ -890,7 +919,7 @@ tr:hover td{background:var(--surface2)}
             <label class="cc-check-label"><input type="checkbox" id="cc-d-address"> 🏠 Full Address</label>
             <label class="cc-check-label"><input type="checkbox" id="cc-d-rating"> ⭐ Rating & Reviews</label>
             <label class="cc-check-label"><input type="checkbox" id="cc-d-hours"> 🕐 Business Hours</label>
-            <label class="cc-check-label"><input type="checkbox" id="cc-d-website"> 🌐 Website Status</label>
+            <label class="cc-check-label"><input type="checkbox" id="cc-d-website" checked> 🌐 Website URL</label>
           </div>
         </div>
 
@@ -920,6 +949,16 @@ tr:hover td{background:var(--surface2)}
         <div style="display:flex;gap:12px;flex-wrap:wrap" id="cc-stat-chips"></div>
       </div>
 
+      <!-- Share Bar -->
+      <div id="cc-share-bar" style="display:none" class="share-bar">
+        <span id="cc-share-count-label">0 leads selected</span>
+        <div class="share-bar-btns">
+          <button class="btn btn-secondary btn-sm" onclick="selectAllCCLeads()" style="color:#fff;border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.1)">Select All</button>
+          <button class="btn btn-secondary btn-sm" onclick="deselectAllCCLeads()" style="color:#fff;border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.1)">Deselect All</button>
+          <button class="btn btn-secondary btn-sm" onclick="openShareModal()" style="color:#fff;border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.15);font-weight:700">📤 Share to Marketer</button>
+        </div>
+      </div>
+
       <!-- Results Table / Cards -->
       <div id="cc-results-wrap" style="display:none">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
@@ -927,13 +966,70 @@ tr:hover td{background:var(--surface2)}
             <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
             <span id="cc-result-count">0 leads found</span>
           </div>
-          <div style="display:flex;gap:8px">
+          <div style="display:flex;gap:8px;align-items:center">
+            <label class="cc-check-label" style="margin:0"><input type="checkbox" id="cc-show-all" onchange="filterCCResults()"> Show All</label>
             <input type="text" id="cc-filter-input" placeholder="Filter results..." oninput="filterCCResults()" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:7px 12px;color:var(--text);font-size:13px;outline:none;width:180px">
           </div>
         </div>
         <div id="cc-results-container"></div>
       </div>
-    </div>
+
+      </div><!-- end cc-panel-find -->
+
+      <!-- ── TAB: Needs Website Dev ── -->
+      <div id="cc-panel-manual" style="display:none">
+        <div class="needs-dev-section">
+          <div class="section-title" style="margin-bottom:4px">✍️ Register a Client Seeking Website Development</div>
+          <p style="font-size:12px;color:var(--text3);margin-bottom:18px">Manually log a business that has contacted you and is looking for a website developer.</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:14px">
+            <div class="form-group"><label>Business / Client Name *</label><input type="text" id="nd-biz" placeholder="e.g. Ravi Textiles"></div>
+            <div class="form-group"><label>Contact Person</label><input type="text" id="nd-person" placeholder="Owner / Manager name"></div>
+            <div class="form-group"><label>Phone *</label><input type="text" id="nd-phone" placeholder="+91 9876543210"></div>
+            <div class="form-group"><label>Email</label><input type="email" id="nd-email" placeholder="business@email.com"></div>
+            <div class="form-group"><label>Location</label><input type="text" id="nd-loc" placeholder="City, State"></div>
+            <div class="form-group"><label>Existing Website URL</label><input type="text" id="nd-site" placeholder="https://example.com or 'None'"></div>
+            <div class="form-group"><label>Website Type Needed</label>
+              <select id="nd-type">
+                <option value="">Select type...</option>
+                <option>E-Commerce</option><option>Portfolio</option><option>Business Landing Page</option>
+                <option>Blog / News</option><option>SaaS / Web App</option><option>Restaurant / Food</option>
+                <option>Healthcare</option><option>Education</option><option>Other</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Budget Range</label>
+              <select id="nd-budget">
+                <option value="">Select range...</option>
+                <option>Under ₹10,000</option><option>₹10,000 – ₹25,000</option>
+                <option>₹25,000 – ₹50,000</option><option>₹50,000 – ₹1,00,000</option>
+                <option>Above ₹1,00,000</option><option>To be discussed</option>
+              </select>
+            </div>
+            <div class="form-group"><label>Timeline</label><input type="text" id="nd-timeline" placeholder="e.g. 2–3 weeks"></div>
+          </div>
+          <div class="form-group"><label>Business Description / Requirements</label><textarea id="nd-desc" placeholder="What does the business do? What features are needed on the website?"></textarea></div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
+            <button class="btn btn-primary" onclick="saveNeedsDevClient()" style="justify-content:center">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save Client
+            </button>
+            <button class="btn btn-secondary" onclick="clearNeedsDevForm()" style="justify-content:center">✕ Clear Form</button>
+          </div>
+        </div>
+
+        <!-- Saved "Needs Dev" clients list -->
+        <div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px">
+            <div class="section-title" style="margin-bottom:0">📋 Clients Looking for a Website Developer</div>
+            <div class="share-bar-btns" style="display:flex;gap:8px">
+              <button class="btn btn-secondary btn-sm" onclick="selectAllNeedsDevLeads()">Select All</button>
+              <button class="btn btn-primary btn-sm" onclick="openShareModalNeedsDev()" id="nd-share-btn" style="opacity:.5;pointer-events:none">📤 Share to Marketer</button>
+            </div>
+          </div>
+          <div id="nd-list"></div>
+        </div>
+      </div>
+
+    </div><!-- end page-cc -->
 
     <!-- REPORTS (All) -->
     <div class="page" id="page-reports">
@@ -942,6 +1038,23 @@ tr:hover td{background:var(--surface2)}
         <p>All generated test reports and documents</p>
       </div>
       <div id="reports-list"></div>
+    </div>
+
+    <!-- SHARED LEADS (Marketer — shared by Developer) -->
+    <div class="page" id="page-shared-leads">
+      <div class="page-header">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px">
+          <div>
+            <h2 style="font-family:'Syne',sans-serif;font-weight:700">Shared Leads <span style="font-size:13px;color:var(--teal);font-family:'DM Sans',sans-serif;font-weight:500;margin-left:8px">From Developer</span></h2>
+            <p style="color:var(--text3);font-size:13px;margin-top:4px">Business leads shared with you by the developer for outreach</p>
+          </div>
+          <div style="display:flex;gap:8px">
+            <input type="text" id="sl-filter" placeholder="Search leads..." oninput="filterSharedLeads()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius2);padding:8px 12px;color:var(--text);font-size:13px;outline:none;width:200px">
+          </div>
+        </div>
+      </div>
+      <div id="sl-stat-row" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px"></div>
+      <div id="shared-leads-list"></div>
     </div>
 
   </main>
@@ -1130,17 +1243,18 @@ var BOTTOM_NAV_ICONS={
   intake:'<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
   testing:'<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
   reports:'<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
-  cc:'<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+  cc:'<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+  'shared-leads':'<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>'
 };
 var BOTTOM_NAV_LABELS={home:'Home',users:'Users',tasks:'Tasks',clients:'Clients',
-  builder:'Builder',intake:'Intake',testing:'Testing',reports:'Reports'};
+  builder:'Builder',intake:'Intake',testing:'Testing',reports:'Reports','shared-leads':'Leads'};
 
 function buildBottomNav(){
   var bn=document.getElementById('bottom-nav');
   if(!bn||!currentUser)return;
   var navDef={
     developer:['home','cc','builder','clients','reports'],
-    marketer:['home','intake','reports'],
+    marketer:['home','intake','shared-leads','reports'],
     tester:['home','testing','reports'],
     viewer:['home','reports']
   };
@@ -1407,6 +1521,7 @@ const NAV_DEF={
   marketer:[
     {id:'home',label:'Dashboard',icon:'home'},
     {id:'intake',label:'Client Intake',icon:'edit'},
+    {id:'shared-leads',label:'Shared Leads',icon:'share'},
     {id:'reports',label:'Reports',icon:'file'},
   ],
   tester:[
@@ -1428,7 +1543,8 @@ const ICONS={
   file:'<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
   edit:'<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
   shield:'<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
-  cc:'<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>'
+  cc:'<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
+  share:'<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>'
 };
 
 function buildNav(){
@@ -1462,6 +1578,7 @@ function showPage(id){
   if(id==='reports')loadReports();
   if(id==='builder')loadBuilderClientSelect();
   if(id==='cc')initCCPage();
+  if(id==='shared-leads')loadSharedLeads();
 }
 
 // ─── HOME ────────────────────────────────────────────────────
@@ -2677,6 +2794,335 @@ function exportCCLeads(){
 
 function sleep(ms){return new Promise(function(r){setTimeout(r,ms);});}
 
+// ─── CC TAB SWITCHING ────────────────────────────────────────
+function switchCCTab(tab){
+  document.getElementById('cc-panel-find').style.display = tab==='find'?'block':'none';
+  document.getElementById('cc-panel-manual').style.display = tab==='manual'?'block':'none';
+  document.getElementById('cc-tab-find').className = 'cc-tab'+(tab==='find'?' active':'');
+  document.getElementById('cc-tab-manual').className = 'cc-tab'+(tab==='manual'?' active':'');
+  if(tab==='manual') renderNeedsDevList();
+}
+
+// ─── CC LEAD SELECTION ───────────────────────────────────────
+function toggleCCLeadSelect(realIdx, checkbox){
+  if(ccLeads[realIdx]) ccLeads[realIdx]._selected = checkbox.checked;
+  var card = document.getElementById('cc-card-'+realIdx);
+  if(card) card.className = 'cc-lead-card'+(checkbox.checked?' selected-for-share':'');
+  updateCCShareCount();
+}
+
+function updateCCShareCount(){
+  var count = ccLeads.filter(function(l){return l._selected;}).length;
+  var label = document.getElementById('cc-share-count-label');
+  if(label) label.textContent = count+' lead'+(count!==1?'s':'')+' selected';
+}
+
+function selectAllCCLeads(){
+  ccLeads.forEach(function(l){l._selected=true;});
+  renderCCResults(ccLeadsFiltered);
+  updateCCShareCount();
+}
+
+function deselectAllCCLeads(){
+  ccLeads.forEach(function(l){l._selected=false;});
+  renderCCResults(ccLeadsFiltered);
+  updateCCShareCount();
+}
+
+// ─── SHARED LEADS STORAGE ────────────────────────────────────
+function getSharedLeads(){return JSON.parse(localStorage.getItem('ccs_shared_leads')||'[]');}
+function saveSharedLeads(d){localStorage.setItem('ccs_shared_leads',JSON.stringify(d));}
+
+function getMarketers(){
+  return getUsers().filter(function(u){return u.role==='marketer'&&u.active!==false;});
+}
+
+// ─── SHARE MODAL (AI Leads tab) ──────────────────────────────
+function openShareModal(){
+  var selected = ccLeads.filter(function(l){return l._selected;});
+  if(!selected.length){notify('Please select at least one lead first','error');return;}
+  var marketers = getMarketers();
+  if(!marketers.length){notify('No marketers found. Add a marketer user first.','error');return;}
+  var sel = document.getElementById('share-marketer-select');
+  sel.innerHTML = '<option value="">Choose a marketer...</option>'
+    +marketers.map(function(m){return '<option value="'+m.id+'">'+esc(m.name)+' ('+m.email||m.username+')</option>';}).join('');
+  var sumEl = document.getElementById('share-summary-text');
+  var noSite = selected.filter(function(l){return !l.has_website;}).length;
+  var hasSite = selected.length - noSite;
+  if(sumEl) sumEl.textContent = selected.length+' leads selected — '+noSite+' without website, '+hasSite+' with existing website.';
+  document.getElementById('share-note').value='';
+  document.getElementById('modal-share-leads').setAttribute('data-share-type','ai');
+  document.getElementById('modal-share-leads').style.display='flex';
+}
+
+// ─── SHARE MODAL (Needs Dev tab) ────────────────────────────
+var selectedNeedsDevIds = [];
+
+function openShareModalNeedsDev(){
+  var all = getNeedsDevClients();
+  var selected = all.filter(function(c){return c._selected;});
+  if(!selected.length){notify('Please select at least one client first','error');return;}
+  var marketers = getMarketers();
+  if(!marketers.length){notify('No marketers found. Add a marketer user first.','error');return;}
+  var sel = document.getElementById('share-marketer-select');
+  sel.innerHTML = '<option value="">Choose a marketer...</option>'
+    +marketers.map(function(m){return '<option value="'+m.id+'">'+esc(m.name)+'</option>';}).join('');
+  var sumEl = document.getElementById('share-summary-text');
+  if(sumEl) sumEl.textContent = selected.length+' client'+(selected.length!==1?'s':'')+' seeking website development will be shared.';
+  document.getElementById('share-note').value='';
+  document.getElementById('modal-share-leads').setAttribute('data-share-type','needs-dev');
+  document.getElementById('modal-share-leads').style.display='flex';
+}
+
+function confirmShareLeads(){
+  var marketerId = document.getElementById('share-marketer-select').value;
+  if(!marketerId){notify('Please select a marketer','error');return;}
+  var note = document.getElementById('share-note').value.trim();
+  var shareType = document.getElementById('modal-share-leads').getAttribute('data-share-type');
+  var marketer = getUsers().find(function(u){return u.id===marketerId;});
+  var shared = getSharedLeads();
+
+  if(shareType==='ai'){
+    var selected = ccLeads.filter(function(l){return l._selected;});
+    var batch = {
+      id:'sl-'+Date.now(),
+      type:'ai',
+      sharedBy:currentUser.id,
+      sharedByName:currentUser.name,
+      sharedTo:marketerId,
+      sharedToName:marketer?marketer.name:'Marketer',
+      sharedAt:new Date().toISOString(),
+      note:note,
+      leads: selected.map(function(l){return Object.assign({},l,{_selected:undefined});})
+    };
+    shared.push(batch);
+    saveSharedLeads(shared);
+    ccLeads.forEach(function(l){l._selected=false;});
+    renderCCResults(ccLeadsFiltered);
+    updateCCShareCount();
+    addActivity(selected.length+' AI leads shared to '+batch.sharedToName,'success');
+    notify(selected.length+' leads shared to '+(marketer?marketer.name:'marketer')+'!','success');
+  } else {
+    var all = getNeedsDevClients();
+    var selClients = all.filter(function(c){return c._selected;});
+    var batch = {
+      id:'sl-'+Date.now(),
+      type:'needs-dev',
+      sharedBy:currentUser.id,
+      sharedByName:currentUser.name,
+      sharedTo:marketerId,
+      sharedToName:marketer?marketer.name:'Marketer',
+      sharedAt:new Date().toISOString(),
+      note:note,
+      leads: selClients.map(function(c){return Object.assign({},c,{_selected:undefined});})
+    };
+    shared.push(batch);
+    saveSharedLeads(shared);
+    all.forEach(function(c){c._selected=false;});
+    saveNeedsDevClients(all);
+    renderNeedsDevList();
+    addActivity(selClients.length+' "needs dev" clients shared to '+batch.sharedToName,'success');
+    notify(selClients.length+' clients shared to '+(marketer?marketer.name:'marketer')+'!','success');
+  }
+  closeModal('modal-share-leads');
+}
+
+// ─── NEEDS DEV CLIENTS ───────────────────────────────────────
+function getNeedsDevClients(){return JSON.parse(localStorage.getItem('ccs_needs_dev')||'[]');}
+function saveNeedsDevClients(d){localStorage.setItem('ccs_needs_dev',JSON.stringify(d));}
+
+function saveNeedsDevClient(){
+  var biz = document.getElementById('nd-biz').value.trim();
+  var person = document.getElementById('nd-person').value.trim();
+  var phone = document.getElementById('nd-phone').value.trim();
+  var email = document.getElementById('nd-email').value.trim();
+  var loc = document.getElementById('nd-loc').value.trim();
+  var site = document.getElementById('nd-site').value.trim();
+  var type = document.getElementById('nd-type').value;
+  var budget = document.getElementById('nd-budget').value;
+  var timeline = document.getElementById('nd-timeline').value.trim();
+  var desc = document.getElementById('nd-desc').value.trim();
+  if(!biz||!phone){notify('Business name and phone are required','error');return;}
+  var all = getNeedsDevClients();
+  all.unshift({
+    id:'nd-'+Date.now(),biz,person,phone,email,loc,
+    existing_website:site||'None',type,budget,timeline,desc,
+    savedBy:currentUser.id,savedAt:new Date().toISOString()
+  });
+  saveNeedsDevClients(all);
+  clearNeedsDevForm();
+  renderNeedsDevList();
+  addActivity('Needs-dev client "'+biz+'" saved','success');
+  notify(biz+' saved!','success');
+}
+
+function clearNeedsDevForm(){
+  ['nd-biz','nd-person','nd-phone','nd-email','nd-loc','nd-site','nd-type','nd-budget','nd-timeline','nd-desc']
+    .forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+}
+
+function deleteNeedsDevClient(id){
+  if(!confirm('Delete this client?'))return;
+  var all = getNeedsDevClients().filter(function(c){return c.id!==id;});
+  saveNeedsDevClients(all);
+  renderNeedsDevList();
+  notify('Client removed','success');
+}
+
+function toggleNeedsDevSelect(id, checkbox){
+  var all = getNeedsDevClients();
+  var c = all.find(function(x){return x.id===id;});
+  if(c) c._selected = checkbox.checked;
+  saveNeedsDevClients(all);
+  var sel = all.filter(function(x){return x._selected;}).length;
+  var btn = document.getElementById('nd-share-btn');
+  if(btn){btn.style.opacity=sel>0?'1':'0.5';btn.style.pointerEvents=sel>0?'auto':'none';}
+}
+
+function selectAllNeedsDevLeads(){
+  var all = getNeedsDevClients();
+  all.forEach(function(c){c._selected=true;});
+  saveNeedsDevClients(all);
+  renderNeedsDevList();
+}
+
+function renderNeedsDevList(){
+  var el = document.getElementById('nd-list');
+  if(!el) return;
+  var all = getNeedsDevClients();
+  var sel = all.filter(function(c){return c._selected;}).length;
+  var btn = document.getElementById('nd-share-btn');
+  if(btn){btn.style.opacity=sel>0?'1':'0.5';btn.style.pointerEvents=sel>0?'auto':'none';}
+  if(!all.length){
+    el.innerHTML='<div class="empty-state"><div class="es-icon">📋</div><p>No clients logged yet. Use the form above to add one.</p></div>';
+    return;
+  }
+  var html='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px">';
+  all.forEach(function(c){
+    html+='<div class="cc-lead-card'+(c._selected?' selected-for-share':'')+'" style="position:relative">';
+    html+='<input type="checkbox" class="share-checkbox" '+(c._selected?'checked':'')+' onchange="toggleNeedsDevSelect(\''+c.id+'\',this)">';
+    if(c.existing_website&&c.existing_website!=='None') html+='<div class="cc-has-website-badge">Has Website</div>';
+    else html+='<div class="cc-needs-dev-badge">Needs Dev</div>';
+    html+='<div class="lead-name" style="padding-left:24px">'+esc(c.biz)+'</div>';
+    html+='<div class="lead-type">'+(c.type||'Website Development')+'</div>';
+    html+='<div style="margin-bottom:8px">';
+    if(c.person) html+='<div class="cc-data-pill has-data">&#128100; '+esc(c.person)+'</div>';
+    if(c.phone) html+='<div class="cc-data-pill has-data">&#128222; '+esc(c.phone)+'</div>';
+    if(c.email) html+='<div class="cc-data-pill has-data">&#128231; '+esc(c.email)+'</div>';
+    if(c.loc) html+='<div class="cc-data-pill has-data">&#127968; '+esc(c.loc)+'</div>';
+    if(c.existing_website&&c.existing_website!=='None') html+='<div class="cc-data-pill has-data">&#127760; '+esc(c.existing_website)+'</div>';
+    if(c.budget) html+='<div class="cc-data-pill">&#128176; '+esc(c.budget)+'</div>';
+    if(c.timeline) html+='<div class="cc-data-pill">&#128336; '+esc(c.timeline)+'</div>';
+    html+='</div>';
+    if(c.desc) html+='<div class="text-sm text-muted" style="margin-bottom:10px;line-height:1.5">'+esc(c.desc.slice(0,100))+(c.desc.length>100?'…':'')+'</div>';
+    html+='<div class="cc-lead-actions">';
+    if(c.phone) html+='<a href="tel:'+esc(c.phone)+'" class="btn btn-secondary btn-sm" style="text-decoration:none;font-size:11px">&#128222; Call</a>';
+    if(c.email) html+='<a href="mailto:'+esc(c.email)+'" class="btn btn-secondary btn-sm" style="text-decoration:none;font-size:11px">&#128231; Email</a>';
+    html+='<button class="btn btn-danger btn-sm" style="font-size:11px" onclick="deleteNeedsDevClient(\''+c.id+'\')">Delete</button>';
+    html+='</div>';
+    html+='<div class="text-xs text-muted" style="margin-top:8px">Saved '+timeAgo(c.savedAt)+'</div>';
+    html+='</div>';
+  });
+  html+='</div>';
+  el.innerHTML=html;
+}
+
+// ─── SHARED LEADS (Marketer view) ────────────────────────────
+var allSharedLeads=[];
+function loadSharedLeads(){
+  var all = getSharedLeads().filter(function(b){return b.sharedTo===currentUser.id;});
+  allSharedLeads = all;
+  renderSharedLeads(all);
+}
+
+function filterSharedLeads(){
+  var q = (document.getElementById('sl-filter')||{}).value||'';
+  q = q.toLowerCase();
+  if(!q){renderSharedLeads(allSharedLeads);return;}
+  var filtered = allSharedLeads.filter(function(batch){
+    return batch.leads.some(function(l){
+      return (l.name&&l.name.toLowerCase().includes(q))
+        ||(l.biz&&l.biz.toLowerCase().includes(q))
+        ||(l.phone&&l.phone.includes(q))
+        ||(l.email&&l.email&&l.email.toLowerCase().includes(q));
+    }) || (batch.note&&batch.note.toLowerCase().includes(q));
+  });
+  renderSharedLeads(filtered);
+}
+
+function renderSharedLeads(batches){
+  var el = document.getElementById('shared-leads-list');
+  var statRow = document.getElementById('sl-stat-row');
+  if(!el) return;
+
+  // Stats
+  var totalLeads = 0;
+  batches.forEach(function(b){totalLeads+=b.leads.length;});
+  if(statRow) statRow.innerHTML=[
+    {label:'Batches Shared',val:batches.length,color:'var(--accent2)'},
+    {label:'Total Leads',val:totalLeads,color:'var(--teal)'},
+    {label:'Needs Website',val:batches.reduce(function(s,b){return s+b.leads.filter(function(l){return !l.has_website&&!l.existing_website;}).length;},0),color:'var(--accent3)'},
+    {label:'Has Website',val:batches.reduce(function(s,b){return s+b.leads.filter(function(l){return l.has_website||l.website_url||(l.existing_website&&l.existing_website!=='None');}).length;},0),color:'var(--amber)'}
+  ].map(function(s){
+    return '<div class="cc-stat-chip"><span style="color:'+s.color+';font-size:16px;font-weight:700">'+s.val+'</span>'
+      +'<span style="color:var(--text3);margin-left:4px">'+s.label+'</span></div>';
+  }).join('');
+
+  if(!batches.length){
+    el.innerHTML='<div class="empty-state"><div class="es-icon">📭</div><p>No leads have been shared with you yet.<br>Ask the developer to share leads from Collect Clients.</p></div>';
+    return;
+  }
+
+  var html='';
+  batches.slice().reverse().forEach(function(batch){
+    var typeLabel = batch.type==='needs-dev'?'✍️ Clients Seeking Dev':'🔍 AI Discovered Leads';
+    html+='<div class="card" style="margin-bottom:20px">';
+    html+='<div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px;margin-bottom:14px">';
+    html+='<div>';
+    html+='<div style="font-family:\'Syne\',sans-serif;font-size:15px;font-weight:700">'+typeLabel+'</div>';
+    html+='<div class="text-xs text-muted" style="margin-top:4px">Shared by <strong style="color:var(--text2)">'+esc(batch.sharedByName)+'</strong> · '+timeAgo(batch.sharedAt)+' · '+batch.leads.length+' lead'+(batch.leads.length!==1?'s':'')+'</div>';
+    if(batch.note) html+='<div style="margin-top:6px;font-size:12px;color:var(--accent2);background:rgba(124,111,255,.08);border-radius:6px;padding:6px 10px;display:inline-block">💬 '+esc(batch.note)+'</div>';
+    html+='</div>';
+    html+='</div>';
+    html+='<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px">';
+    batch.leads.forEach(function(lead){
+      var noSite = !lead.has_website && (!lead.existing_website||lead.existing_website==='None');
+      var websiteUrl = lead.website_url || (lead.existing_website&&lead.existing_website!=='None'?lead.existing_website:null);
+      var potScore = lead.potential_score||0;
+      var potColor = potScore>=8?'var(--teal)':potScore>=5?'var(--amber)':'var(--text3)';
+      html+='<div class="cc-lead-card" style="position:relative">';
+      if(noSite) html+='<div class="cc-no-website-badge">No Website</div>';
+      else if(websiteUrl) html+='<div class="cc-has-website-badge">Has Website</div>';
+      html+='<div class="lead-name">'+esc(lead.name||lead.biz||'Unknown')+'</div>';
+      html+='<div class="lead-type">'+esc(lead.type||lead.type||'Business')+'</div>';
+      html+='<div style="margin-bottom:8px">';
+      if(lead.person) html+='<div class="cc-data-pill has-data">&#128100; '+esc(lead.person)+'</div>';
+      if(lead.phone) html+='<div class="cc-data-pill has-data">&#128222; '+esc(lead.phone)+'</div>';
+      if(lead.email) html+='<div class="cc-data-pill has-data">&#128231; '+esc(lead.email)+'</div>';
+      if(lead.loc||lead.address) html+='<div class="cc-data-pill has-data">&#127968; '+esc(lead.loc||lead.address)+'</div>';
+      if(websiteUrl) html+='<div class="cc-data-pill has-data">&#127760; <a href="'+esc(websiteUrl)+'" target="_blank" style="color:var(--teal);text-decoration:none">'+esc(websiteUrl.replace(/https?:\/\//,'').split('/')[0])+'</a></div>';
+      if(lead.budget) html+='<div class="cc-data-pill">&#128176; '+esc(lead.budget)+'</div>';
+      if(lead.timeline) html+='<div class="cc-data-pill">&#128336; '+esc(lead.timeline)+'</div>';
+      if(lead.rating) html+='<div class="cc-data-pill has-data">&#11088; '+lead.rating+'</div>';
+      if(lead.maps_link) html+='<div class="cc-data-pill has-data"><a href="'+esc(lead.maps_link)+'" target="_blank" style="color:var(--teal);text-decoration:none">&#128205; View on Maps</a></div>';
+      html+='</div>';
+      if(potScore>0){
+        html+='<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">';
+        html+='<span style="font-size:11px;color:var(--text3)">Potential:</span>';
+        html+='<span style="font-size:15px;font-weight:700;color:'+potColor+'">'+potScore+'/10</span>';
+        html+='</div>';
+      }
+      if(lead.desc) html+='<div class="text-sm text-muted" style="margin-bottom:10px;line-height:1.5">'+esc(lead.desc.slice(0,100))+(lead.desc.length>100?'…':'')+'</div>';
+      html+='<div class="cc-lead-actions">';
+      if(lead.phone) html+='<a href="tel:'+esc(lead.phone)+'" class="btn btn-teal btn-sm" style="text-decoration:none;font-size:11px">&#128222; Call</a>';
+      if(lead.email) html+='<a href="mailto:'+esc(lead.email)+'" class="btn btn-teal btn-sm" style="text-decoration:none;font-size:11px">&#128231; Email</a>';
+      html+='</div></div>';
+    });
+    html+='</div></div>';
+  });
+  el.innerHTML=html;
+}
+
 
 // ─── CC STATE DATA ───────────────────────────────────────────
 var CC_STATES = {
@@ -2721,11 +3167,13 @@ function clearCCResults(){
   var res = document.getElementById('cc-results-wrap');
   var lines = document.getElementById('cc-log-lines');
   var expBtn = document.getElementById('cc-export-btn');
+  var shareBar = document.getElementById('cc-share-bar');
   if(log) log.style.display='none';
   if(sum) sum.style.display='none';
   if(res) res.style.display='none';
   if(lines) lines.innerHTML='';
   if(expBtn){expBtn.disabled=true;expBtn.style.opacity='0.5';}
+  if(shareBar) shareBar.style.display='none';
 }
 
 var ccLeads = [];
@@ -2740,12 +3188,16 @@ function renderCCStats(leads, noWebsiteCount){
   el.innerHTML = [
     {label:'Total Found', val:leads.length, color:'var(--accent2)'},
     {label:'No Website', val:noWebsiteCount, color:'var(--accent3)'},
-    {label:'Has Website', val:withWebsite, color:'var(--text3)'},
+    {label:'Has Website', val:withWebsite, color:'var(--teal)'},
     {label:'Avg Potential', val:avgScore.toFixed(1)+'/10', color:'var(--amber)'}
   ].map(function(s){
     return '<div class="cc-stat-chip"><span style="color:'+s.color+';font-size:16px;font-weight:700">'+s.val+'</span>'
       +'<span style="color:var(--text3);margin-left:4px">'+s.label+'</span></div>';
   }).join('');
+  // Show share bar
+  var shareBar = document.getElementById('cc-share-bar');
+  if(shareBar) shareBar.style.display='flex';
+  updateCCShareCount();
 }
 
 function renderCCResults(leads){
@@ -2758,17 +3210,24 @@ function renderCCResults(leads){
   }
   var html = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px">';
   leads.forEach(function(lead, idx){
+    // find real index in ccLeads
+    var realIdx = ccLeads.indexOf(lead);
     var noSite = !lead.has_website;
     var potScore = lead.potential_score || 0;
     var potColor = potScore>=8?'var(--teal)':potScore>=5?'var(--amber)':'var(--text3)';
-    html += '<div class="cc-lead-card">';
+    var isChecked = lead._selected ? 'checked' : '';
+    html += '<div class="cc-lead-card'+(lead._selected?' selected-for-share':'')+'" id="cc-card-'+realIdx+'">';
+    html += '<input type="checkbox" class="share-checkbox" '+isChecked+' onchange="toggleCCLeadSelect('+realIdx+',this)">';
     if(noSite) html += '<div class="cc-no-website-badge">No Website</div>';
-    html += '<div class="lead-name">'+esc(lead.name||'Unknown')+'</div>';
+    else if(lead.website_url) html += '<div class="cc-has-website-badge">Has Website</div>';
+    html += '<div class="lead-name" style="padding-left:24px">'+esc(lead.name||'Unknown')+'</div>';
     html += '<div class="lead-type">'+esc(lead.type||'Business')+'</div>';
     html += '<div style="margin-bottom:8px">';
     if(lead.phone) html += '<div class="cc-data-pill has-data">&#128222; '+esc(lead.phone)+'</div>';
     if(lead.email) html += '<div class="cc-data-pill has-data">&#128231; '+esc(lead.email)+'</div>';
     if(lead.address) html += '<div class="cc-data-pill has-data">&#127968; '+esc(lead.address)+'</div>';
+    if(lead.website_url) html += '<div class="cc-data-pill has-data">&#127760; <a href="'+esc(lead.website_url)+'" target="_blank" style="color:var(--teal);text-decoration:none">'+esc(lead.website_url.replace(/https?:\/\//,'').split('/')[0])+'</a></div>';
+    else html += '<div class="cc-data-pill no-data">&#127760; No website</div>';
     if(lead.rating) html += '<div class="cc-data-pill has-data">&#11088; '+lead.rating+' ('+lead.review_count+' reviews)</div>';
     if(lead.hours) html += '<div class="cc-data-pill has-data">&#128336; '+esc(lead.hours)+'</div>';
     if(lead.owner_name) html += '<div class="cc-data-pill">&#128100; '+esc(lead.owner_name)+'</div>';
@@ -2777,19 +3236,19 @@ function renderCCResults(leads){
     html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">';
     html += '<span style="font-size:11px;color:var(--text3)">Potential:</span>';
     html += '<span style="font-size:15px;font-weight:700;color:'+potColor+'">'+potScore+'/10</span>';
-    if(lead.no_website_reason) html += '<span style="font-size:10px;color:var(--text3);background:var(--bg3);padding:2px 6px;border-radius:4px">'+esc(lead.no_website_reason.replace(/_/g,' '))+'</span>';
+    if(noSite&&lead.no_website_reason) html += '<span style="font-size:10px;color:var(--text3);background:var(--bg3);padding:2px 6px;border-radius:4px">'+esc(lead.no_website_reason.replace(/_/g,' '))+'</span>';
     html += '</div>';
     html += '<div class="cc-lead-actions">';
     if(lead.maps_link) html += '<a href="'+lead.maps_link+'" target="_blank" class="btn btn-secondary btn-sm" style="text-decoration:none;font-size:11px">&#128205; Maps</a>';
     if(lead.phone) html += '<a href="tel:'+esc(lead.phone)+'" class="btn btn-secondary btn-sm" style="text-decoration:none;font-size:11px">&#128222; Call</a>';
     if(lead.email) html += '<a href="mailto:'+esc(lead.email)+'" class="btn btn-secondary btn-sm" style="text-decoration:none;font-size:11px">&#128231; Email</a>';
-    html += '<button class="btn btn-teal btn-sm" style="font-size:11px" data-ccidx="'+idx+'">+ Client</button>';
+    html += '<button class="btn btn-teal btn-sm" style="font-size:11px" data-ccidx="'+realIdx+'">+ Client</button>';
     html += '</div></div>';
   });
   html += '</div>';
   if(el){
     el.innerHTML = html;
-    el.querySelectorAll('[data-ccidx]').forEach(function(btn){
+    el.querySelectorAll('button[data-ccidx]').forEach(function(btn){
       btn.addEventListener('click', function(){
         addLeadAsClient(parseInt(this.getAttribute('data-ccidx')));
       });
@@ -2799,22 +3258,29 @@ function renderCCResults(leads){
 
 function filterCCResults(){
   var inp = document.getElementById('cc-filter-input');
+  var showAll = document.getElementById('cc-show-all');
   var q = inp ? inp.value.toLowerCase() : '';
-  if(!q){ccLeadsFiltered = ccLeads.slice();}
+  var all = showAll ? showAll.checked : true;
+  var base = ccLeads.slice();
+  // If "Show All" not checked, only show "no website" leads by default
+  if(!all) base = base.filter(function(l){return !l.has_website;});
+  if(!q){ccLeadsFiltered = base;}
   else{
-    ccLeadsFiltered = ccLeads.filter(function(l){
+    ccLeadsFiltered = base.filter(function(l){
       return (l.name&&l.name.toLowerCase().includes(q))
         ||(l.type&&l.type.toLowerCase().includes(q))
         ||(l.address&&l.address.toLowerCase().includes(q))
         ||(l.phone&&l.phone.includes(q))
-        ||(l.email&&l.email.toLowerCase().includes(q));
+        ||(l.email&&l.email.toLowerCase().includes(q))
+        ||(l.website_url&&l.website_url.toLowerCase().includes(q));
     });
   }
   renderCCResults(ccLeadsFiltered);
 }
 
 function buildCCPrompt(bizType, location, country, state, city, count, opts){
-  var fields = ['name','type','has_website (boolean, 85% should be false)','no_website_reason (small_owner/traditional/new_business/tech_averse)'];
+  var fields = ['name','type','has_website (boolean, 70% should be false)','no_website_reason (small_owner/traditional/new_business/tech_averse — null if has_website is true)'];
+  if(opts.collectWebsite) fields.push('website_url (full URL like https://example.com if has_website is true, otherwise null)');
   if(opts.collectPhone) fields.push('phone (realistic '+country+' phone number)');
   if(opts.collectEmail) fields.push('email (realistic email or null)');
   if(opts.collectMaps) fields.push('maps_link (google maps search URL)');
@@ -2824,8 +3290,9 @@ function buildCCPrompt(bizType, location, country, state, city, count, opts){
   fields.push('potential_score (1-10)','owner_name','established_year (1990-2023)');
 
   return 'Generate a JSON array of exactly '+count+' '+bizType+' businesses in '+location+'.\n'
-    +'Rules: 85% must have has_website=false. Names must be culturally realistic for '+country+'.\n'
+    +'Rules: 70% must have has_website=false. Names must be culturally realistic for '+country+'.\n'
     +'Phone format must match '+country+'. Addresses must be realistic for '+location+'.\n'
+    +'For businesses WITH a website, generate a plausible website_url. For businesses without, set website_url to null.\n'
     +'Each object must have: '+fields.join(', ')+'\n'
     +'Return ONLY the JSON array. No explanation, no markdown.';
 }
@@ -2846,6 +3313,7 @@ async function runCCSearch(){
   var collectAddress = document.getElementById('cc-d-address').checked;
   var collectRating = document.getElementById('cc-d-rating').checked;
   var collectHours = document.getElementById('cc-d-hours').checked;
+  var collectWebsite = document.getElementById('cc-d-website').checked;
 
   var location = [city,state,country].filter(Boolean).join(', ');
 
@@ -2876,7 +3344,8 @@ async function runCCSearch(){
 
   var prompt = buildCCPrompt(bizType, location, country, state, city, count,
     {collectPhone:collectPhone,collectEmail:collectEmail,collectMaps:collectMaps,
-     collectAddress:collectAddress,collectRating:collectRating,collectHours:collectHours});
+     collectAddress:collectAddress,collectRating:collectRating,collectHours:collectHours,
+     collectWebsite:collectWebsite});
 
   try{
     var data = await claudeFetch({
@@ -2939,6 +3408,35 @@ async function runCCSearch(){
 }
 
 </script>
+
+<div id="modal-share-leads" class="modal-bg" style="display:none" onclick="if(event.target===this)closeModal('modal-share-leads')">
+  <div class="modal" style="max-width:480px">
+    <div class="modal-header">
+      <h3>📤 Share Leads to Marketer</h3>
+      <button class="modal-close" onclick="closeModal('modal-share-leads')">✕</button>
+    </div>
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:14px">
+      <div class="form-group">
+        <label>Select Marketer</label>
+        <select id="share-marketer-select" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:11px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;width:100%">
+          <option value="">Choose a marketer...</option>
+        </select>
+      </div>
+      <div style="background:var(--bg3);border-radius:8px;padding:12px 14px">
+        <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:6px">Summary</div>
+        <div id="share-summary-text" style="font-size:13px;color:var(--text3)">—</div>
+      </div>
+      <div class="form-group">
+        <label>Note (optional)</label>
+        <textarea id="share-note" placeholder="Add a message or outreach instructions for the marketer..." style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:11px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;width:100%;resize:vertical;min-height:70px"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-share-leads')">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmShareLeads()" style="justify-content:center">📤 Share Now</button>
+    </div>
+  </div>
+</div>
 
 <div id="modal-apikey" class="modal-bg" style="display:none" onclick="if(event.target===this)closeModal('modal-apikey')">
   <div class="modal" style="max-width:500px">
