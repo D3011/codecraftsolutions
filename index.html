@@ -1177,6 +1177,12 @@ function saveApiKey(k){localStorage.setItem('ccs_groq_key',k.trim());}
 function openApiKeyModal(){
   document.getElementById('modal-apikey').style.display='flex';
   document.getElementById('apikey-input').value=getApiKey();
+  // Show file:// warning if applicable
+  var warn=document.getElementById('file-protocol-warn');
+  if(warn) warn.style.display=(window.location.protocol==='file:')?'block':'none';
+  // Reset test result
+  var res=document.getElementById('test-conn-result');
+  if(res) res.style.display='none';
 }
 function saveApiKeyFromModal(){
   const k=document.getElementById('apikey-input').value.trim();
@@ -1189,29 +1195,80 @@ function saveApiKeyFromModal(){
 async function claudeFetch(body){
   const key=getApiKey();
   if(!key){openApiKeyModal();throw new Error('NO_KEY');}
-  // Convert Anthropic format to OpenAI-compatible format for Groq
+
   const messages=[];
   if(body.system) messages.push({role:'system',content:body.system});
-  messages.push(...(body.messages||[]));
-  const res=await fetch('https://api.groq.com/openai/v1/chat/completions',{
-    method:'POST',
-    headers:{
-      'Content-Type':'application/json',
-      'Authorization':'Bearer '+key
-    },
-    body:JSON.stringify({
-      model: GROQ_MODEL,
-      max_tokens: body.max_tokens||2048,
-      messages
-    })
-  });
-  if(!res.ok){
-    const err=await res.json().catch(()=>({error:{message:'API error'}}));
-    throw new Error(err.error?.message||'API error '+res.status);
+  (body.messages||[]).forEach(function(m){messages.push(m);});
+
+  // Detect file:// protocol — browsers block cross-origin fetch from file://
+  if(window.location.protocol==='file:'){
+    throw new Error('Cannot call API from file://. Please open this portal using a local web server. Try: python3 -m http.server 8080 then open http://localhost:8080');
   }
+
+  let res;
+  try{
+    res = await fetch('https://api.groq.com/openai/v1/chat/completions',{
+      method:'POST',
+      mode:'cors',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+key
+      },
+      body:JSON.stringify({
+        model:GROQ_MODEL,
+        max_tokens:body.max_tokens||2048,
+        temperature:0.7,
+        messages:messages
+      })
+    });
+  }catch(netErr){
+    const msg = netErr.message||'';
+    if(msg.toLowerCase().includes('failed to fetch')||msg.toLowerCase().includes('networkerror')){
+      throw new Error('Network blocked. If using file://, run: python3 -m http.server 8080 and open http://localhost:8080');
+    }
+    throw new Error('Network error: '+msg);
+  }
+
+  if(res.status===401) throw new Error('Invalid API key. Check your Groq key at console.groq.com/keys');
+  if(res.status===429) throw new Error('Rate limit hit. Wait a moment and try again.');
+  if(!res.ok){
+    let msg='API error '+res.status;
+    try{const e=await res.json();msg=e.error&&e.error.message?e.error.message:msg;}catch(x){}
+    throw new Error(msg);
+  }
+
   const data=await res.json();
-  // Convert Groq response back to Anthropic-like format so existing code works
-  return {content:[{type:'text',text:data.choices?.[0]?.message?.content||''}]};
+  return {content:[{type:'text',text:(data.choices&&data.choices[0]&&data.choices[0].message)?data.choices[0].message.content:''}]};
+}
+
+async function testGroqConnection(){
+  const btn=document.getElementById('test-conn-btn');
+  const resEl=document.getElementById('test-conn-result');
+  if(btn){btn.disabled=true;btn.textContent='Testing...';}
+  if(resEl){resEl.style.display='none';}
+  try{
+    const data=await claudeFetch({
+      max_tokens:5,
+      system:'Reply with only: OK',
+      messages:[{role:'user',content:'ping'}]
+    });
+    const ok=data.content&&data.content[0]&&data.content[0].text;
+    if(resEl){
+      resEl.style.display='block';
+      resEl.style.color='var(--teal)';
+      resEl.textContent='Connected! Groq API is working.';
+    }
+    notify('Groq API connected successfully!','success');
+    updateApiKeyStatus();
+  }catch(e){
+    if(resEl){
+      resEl.style.display='block';
+      resEl.style.color='var(--accent3)';
+      resEl.textContent='Failed: '+e.message;
+    }
+    if(e.message!=='NO_KEY') notify('Test failed: '+e.message,'error');
+  }
+  if(btn){btn.disabled=false;btn.textContent='Test Connection';}
 }
 
 // ─── STATE ───────────────────────────────────────────────────
@@ -1299,7 +1356,28 @@ function initApp(){
   buildBottomNav();
   updateMobileRole();
   updateApiKeyStatus();
+  checkProtocol();
   showPage('home');
+}
+
+function checkProtocol(){
+  if(window.location.protocol!=='file:') return;
+  // Show a persistent top banner warning
+  var existing=document.getElementById('file-banner');
+  if(existing) return;
+  var banner=document.createElement('div');
+  banner.id='file-banner';
+  banner.style.cssText='position:fixed;top:0;left:0;right:0;z-index:9999;background:#b91c1c;color:#fff;'
+    +'font-size:12px;font-weight:600;padding:8px 16px;display:flex;align-items:center;gap:12px;'
+    +'justify-content:space-between;font-family:monospace';
+  banner.innerHTML='<span>&#9888; FILE:// detected — AI features are blocked by your browser. '
+    +'Fix: open terminal and run: <strong>python3 -m http.server 8080</strong> then visit http://localhost:8080</span>'
+    +'<button onclick="document.getElementById(\'file-banner\').remove()" '
+    +'style="background:none;border:1px solid rgba(255,255,255,.4);color:#fff;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px">Dismiss</button>';
+  document.body.prepend(banner);
+  // Also push main content down
+  var main=document.querySelector('.main');
+  if(main) main.style.paddingTop='calc('+getComputedStyle(main).paddingTop+' + 36px)';
 }
 
 function updateApiKeyStatus(){
@@ -2187,7 +2265,15 @@ After the code block, write a brief 2-3 line summary of what was built/changed.`
     document.getElementById('builder-messages').scrollTop=99999;
   }catch(e){
     typingEl.remove();
-    if(e.message!=='NO_KEY') appendMsg('builder-messages','ai','⚠️ Error: '+e.message+'. Check your Groq API key in the sidebar.');
+    if(e.message!=='NO_KEY'){
+      var em=e.message||'';
+      var hint=em.includes('file://')||em.includes('http.server')
+        ?'\n\nFix: Run  python3 -m http.server 8080  in your terminal, then open http://localhost:8080'
+        :em.includes('401')||em.toLowerCase().includes('invalid')
+        ?'\n\nFix: Re-enter your Groq API key (sidebar → Groq API Key button)'
+        :'\n\nCheck your internet connection and API key.';
+      appendMsg('builder-messages','ai','Error: '+em+hint);
+    }
     console.error(e);
   }
 }
@@ -2832,10 +2918,22 @@ async function runCCSearch(){
     addActivity('CC: '+leads.length+' '+bizType+' leads in '+location,'success');
 
   }catch(e){
-    addCCLog('Error: '+e.message,'error');
-    if(statusEl) statusEl.textContent='Error';
+    var errMsg = e.message||'Unknown error';
+    addCCLog('Error: '+errMsg,'error');
+    if(errMsg.toLowerCase().includes('file://')||errMsg.toLowerCase().includes('http.server')){
+      addCCLog('TIP: Run in terminal: python3 -m http.server 8080  then open http://localhost:8080','warn');
+      addCCLog('Or upload this HTML file to any web host (Netlify, Vercel, GitHub Pages)','warn');
+    } else if(errMsg.includes('401')||errMsg.toLowerCase().includes('invalid api')){
+      addCCLog('TIP: Double-check your Groq key at console.groq.com/keys','warn');
+      openApiKeyModal();
+    } else if(errMsg.includes('429')){
+      addCCLog('TIP: Free tier rate limit hit. Wait 30 seconds and try again.','warn');
+    } else if(errMsg.toLowerCase().includes('network')){
+      addCCLog('TIP: Check your internet connection and try again.','warn');
+    }
+    if(statusEl) statusEl.textContent='Error — see log above';
     if(spinner) spinner.style.animation='none';
-    if(e.message!=='NO_KEY') notify('AI error: '+e.message,'error');
+    if(e.message!=='NO_KEY') notify('Error: '+errMsg,'error');
   }
   if(searchBtn){searchBtn.disabled=false;searchBtn.style.opacity='1';}
 }
@@ -2843,26 +2941,53 @@ async function runCCSearch(){
 </script>
 
 <div id="modal-apikey" class="modal-bg" style="display:none" onclick="if(event.target===this)closeModal('modal-apikey')">
-  <div class="modal" style="max-width:480px">
+  <div class="modal" style="max-width:500px">
     <div class="modal-header">
-      <h3>Groq API Key (Free)</h3>
-      <button class="modal-close" onclick="closeModal('modal-apikey')">x</button>
+      <h3>&#128273; Groq API Key <span style="font-size:12px;color:var(--teal);font-family:'DM Sans',sans-serif;font-weight:400">Free &amp; Unlimited</span></h3>
+      <button class="modal-close" onclick="closeModal('modal-apikey')">&#x2715;</button>
     </div>
-    <div class="modal-body">
-      <p class="text-sm" style="color:var(--text2);margin-bottom:16px;line-height:1.6">
-        Groq API is <strong>100% free</strong> — no credit card needed. Sign up at console.groq.com, go to API Keys, and create a free key.
-      </p>
-      <div class="form-group">
-        <label>Anthropic API Key</label>
-        <input type="password" id="apikey-input" placeholder="gsk_..." style="font-family:monospace">
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:14px">
+
+      <!-- file:// warning — shown dynamically -->
+      <div id="file-protocol-warn" style="display:none;background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.3);border-radius:8px;padding:12px 14px">
+        <div style="font-weight:700;font-size:12px;color:var(--accent3);margin-bottom:6px">&#9888;&#65039; File:// Protocol Detected — API calls will fail!</div>
+        <div style="font-size:12px;color:var(--text2);line-height:1.8">
+          Browsers block API requests from <code style="background:var(--bg3);padding:1px 5px;border-radius:3px;font-size:11px">file://</code>.<br>
+          <strong>Fix — run this in your terminal:</strong><br>
+          <code style="display:block;background:var(--bg);padding:8px 10px;border-radius:5px;margin-top:4px;font-size:11px;color:#a8ff78">python3 -m http.server 8080</code>
+          Then open <a href="http://localhost:8080" target="_blank" style="color:var(--accent2)">http://localhost:8080</a> in your browser.
+        </div>
       </div>
-      <p class="text-xs text-muted" style="margin-top:8px">
-        Get your free key at <strong>console.groq.com</strong> → API Keys → Create Key
-      </p>
+
+      <!-- Steps -->
+      <div style="background:var(--bg3);border-radius:8px;padding:12px 14px">
+        <div style="font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px">How to get your free Groq key:</div>
+        <div style="font-size:12px;color:var(--text3);line-height:2">
+          1&#65039;&#8419; Go to <a href="https://console.groq.com/keys" target="_blank" style="color:var(--accent2);font-weight:600">console.groq.com/keys</a> → Sign up free<br>
+          2&#65039;&#8419; Click <strong style="color:var(--text2)">Create API Key</strong> → name it anything<br>
+          3&#65039;&#8419; Copy the key (starts with <code style="background:var(--bg4);padding:1px 5px;border-radius:3px;font-size:11px">gsk_</code>)<br>
+          4&#65039;&#8419; Paste below → click <strong style="color:var(--text2)">Test Connection</strong>
+        </div>
+      </div>
+
+      <!-- Key input -->
+      <div class="form-group" style="margin-bottom:0">
+        <label>Groq API Key</label>
+        <input type="password" id="apikey-input" placeholder="gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxx" style="font-family:monospace;font-size:14px;letter-spacing:.04em">
+      </div>
+
+      <!-- Test result -->
+      <div id="test-conn-result" style="display:none;font-size:12px;font-weight:600;padding:8px 12px;border-radius:6px;background:var(--bg3)"></div>
+
+      <!-- Test button row -->
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <span style="font-size:11px;color:var(--text3)">Key stored only in your browser (localStorage)</span>
+        <button class="btn btn-secondary btn-sm" id="test-conn-btn" onclick="testGroqConnection()">&#128246; Test Connection</button>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeModal('modal-apikey')">Cancel</button>
-      <button class="btn btn-primary" onclick="saveApiKeyFromModal()">Save &amp; Continue</button>
+      <button class="btn btn-primary" onclick="saveApiKeyFromModal()" style="justify-content:center">Save &amp; Continue</button>
     </div>
   </div>
 </div>
