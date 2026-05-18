@@ -3805,32 +3805,147 @@ function filterCCResults(){
 }
 
 function buildCCPrompt(bizType, location, country, state, city, count, opts){
-  var fields = ['name','type','has_website (boolean, 70% should be false)','no_website_reason (small_owner/traditional/new_business/tech_averse — null if has_website is true)'];
-  if(opts.collectWebsite) fields.push('website_url (full URL like https://example.com if has_website is true, otherwise null)');
-  if(opts.collectPhone) fields.push('phone (realistic '+country+' phone number)');
-  if(opts.collectEmail) fields.push('email (realistic email or null)');
-  if(opts.collectMaps) fields.push('maps_link (google maps search URL)');
-  if(opts.collectAddress) fields.push('address (realistic address in '+location+')');
-  if(opts.collectRating) fields.push('rating (3.0-5.0)','review_count (5-500)');
-  if(opts.collectHours) fields.push('hours (e.g. Mon-Sat 9AM-8PM)');
-  fields.push('potential_score (1-10)','owner_name','established_year (1990-2023)');
+  // Cap count to avoid token overflow — quality analysis adds a lot of tokens per lead
+  var safeCount = opts.collectQuality ? Math.min(count, 15) : Math.min(count, 30);
+
+  var fields = ['name (string)','type (string)','has_website (boolean — 70% must be false)','no_website_reason (string: small_owner|traditional|new_business|tech_averse — use null if has_website is true)'];
+  if(opts.collectWebsite) fields.push('website_url (string URL if has_website true, else null)');
+  if(opts.collectPhone)   fields.push('phone (string — realistic '+country+' format)');
+  if(opts.collectEmail)   fields.push('email (string or null)');
+  if(opts.collectMaps)    fields.push('maps_link (string — google.com/maps/search URL)');
+  if(opts.collectAddress) fields.push('address (string — realistic '+location+' address)');
+  if(opts.collectRating)  fields.push('rating (number 3.0-5.0)','review_count (integer 5-500)');
+  if(opts.collectHours)   fields.push('hours (string e.g. Mon-Sat 9AM-8PM)');
+  fields.push('potential_score (integer 1-10)','owner_name (string)','established_year (integer 1990-2023)');
   if(opts.collectQuality){
     fields.push(
-      'website_quality_score (integer 1-10, only if has_website=true — evaluate based on typical SMB websites in '+country+'; null if no website)',
-      'website_quality_label (string: "Poor" if 1-3, "Average" if 4-6, "Good" if 7-8, "Excellent" if 9-10; null if no website)',
-      'website_mistakes (array of 2-4 short strings describing specific technical/design/UX mistakes on the existing site — e.g. "No mobile responsive design", "Missing SSL certificate", "No clear call-to-action button", "Outdated Flash-based animations"; empty array if no website)',
-      'website_disadvantages (array of 2-3 short strings describing business disadvantages caused by the poor website — e.g. "Losing customers to competitors with better online presence", "Cannot accept online orders", "Low search engine visibility"; empty array if no website)'
+      'website_quality_score (integer 1-10 if has_website true, else null)',
+      'website_quality_label (string: Poor|Average|Good|Excellent — based on score, null if no website)',
+      'website_mistakes (array of 2-3 short strings — specific UX/tech flaws; empty array [] if no website)',
+      'website_disadvantages (array of 2-3 short strings — business impact; empty array [] if no website)'
     );
   }
 
-  return 'Generate a JSON array of exactly '+count+' '+bizType+' businesses in '+location+'.\n'
-    +'Rules: 70% must have has_website=false. Names must be culturally realistic for '+country+'.\n'
-    +'Phone format must match '+country+'. Addresses must be realistic for '+location+'.\n'
-    +'For businesses WITH a website: generate a plausible website_url'
-    +(opts.collectQuality?', a realistic website_quality_score, specific website_mistakes, and website_disadvantages.':'. ')
-    +'\nFor businesses WITHOUT a website: website_url=null'+(opts.collectQuality?', website_quality_score=null, website_mistakes=[], website_disadvantages=[].':'. ')
-    +'\nEach object must have: '+fields.join(', ')+'\n'
-    +'Return ONLY the JSON array. No explanation, no markdown.';
+  return 'Generate a JSON array of exactly '+safeCount+' '+bizType+' businesses in '+location+'.\n'
+    +'STRICT RULES:\n'
+    +'1. Return ONLY a raw JSON array — no markdown, no backticks, no explanation\n'
+    +'2. Every string value must use double quotes and have special characters escaped\n'
+    +'3. No trailing commas anywhere\n'
+    +'4. All '+safeCount+' objects must be complete and valid\n'
+    +'5. 70% of businesses must have has_website=false\n'
+    +'6. Names must be realistic for '+country+', phone numbers in '+country+' format\n'
+    +'7. Keep string values short (under 80 chars) to avoid JSON corruption\n'
+    +'Each object must have these exact keys: '+fields.join(', ')+'\n'
+    +'Start your response with [ and end with ]';
+}
+
+// ─── ROBUST JSON PARSER FOR AI LEADS ────────────────────────
+// Handles: truncated JSON, trailing commas, unescaped quotes in values,
+// markdown fences, broken unicode, extra text before/after the array.
+function robustParseLeads(raw){
+  if(!raw) return null;
+
+  // 1. Strip markdown code fences
+  var text = raw.replace(/```json\s*/gi,'').replace(/```\s*/gi,'').trim();
+
+  // 2. Extract the outermost [...] block
+  var start = text.indexOf('[');
+  var end   = text.lastIndexOf(']');
+  if(start === -1) return null;
+  var jsonStr = (end > start) ? text.slice(start, end+1) : text.slice(start);
+
+  // 3. Try direct parse first (best case)
+  try{ var r=JSON.parse(jsonStr); if(Array.isArray(r)&&r.length) return r; }catch(_){}
+
+  // 4. Repair common issues
+  jsonStr = repairJSON(jsonStr);
+
+  // 5. Try again after repair
+  try{ var r2=JSON.parse(jsonStr); if(Array.isArray(r2)&&r2.length) return r2; }catch(_){}
+
+  // 6. Object-by-object extraction fallback — salvage as many objects as possible
+  return extractObjectsFallback(jsonStr);
+}
+
+function repairJSON(s){
+  // Remove trailing commas before } or ]
+  s = s.replace(/,\s*([}\]])/g, '$1');
+
+  // Close unclosed arrays in values like "website_mistakes": ["foo", "bar"  (missing ])
+  // by ensuring every [ has a matching ]
+  // We'll handle this in the bracket-balance step below.
+
+  // Fix unescaped newlines inside string values
+  s = s.replace(/"([^"\\]*(\\.[^"\\]*)*)"/g, function(match){
+    return match.replace(/\n/g,'\\n').replace(/\r/g,'\\r').replace(/\t/g,'\\t');
+  });
+
+  // Balance brackets — if the string was truncated mid-way, close open structures
+  s = balanceBrackets(s);
+
+  // Remove trailing commas again after balance (balance may expose them)
+  s = s.replace(/,\s*([}\]])/g, '$1');
+
+  return s;
+}
+
+function balanceBrackets(s){
+  var opens = [];
+  var inStr = false;
+  var escaped = false;
+  for(var i=0;i<s.length;i++){
+    var c=s[i];
+    if(escaped){escaped=false;continue;}
+    if(c==='\\'){escaped=true;continue;}
+    if(c==='"'){inStr=!inStr;continue;}
+    if(inStr) continue;
+    if(c==='{'||c==='[') opens.push(c);
+    else if(c==='}') { if(opens.length&&opens[opens.length-1]==='{') opens.pop(); }
+    else if(c===']') { if(opens.length&&opens[opens.length-1]==='[') opens.pop(); }
+  }
+  // If we ended inside a string, close it
+  if(inStr) s+='"';
+  // Close all unclosed brackets in reverse
+  while(opens.length){
+    var last=opens.pop();
+    s += last==='{'?'}':']';
+  }
+  return s;
+}
+
+function extractObjectsFallback(s){
+  // Extract individual {...} objects from the broken string
+  var results=[];
+  var depth=0, start=-1, inStr=false, escaped=false;
+  for(var i=0;i<s.length;i++){
+    var c=s[i];
+    if(escaped){escaped=false;continue;}
+    if(c==='\\'){escaped=true;continue;}
+    if(c==='"'){inStr=!inStr;continue;}
+    if(inStr) continue;
+    if(c==='{'){
+      if(depth===0) start=i;
+      depth++;
+    } else if(c==='}'){
+      depth--;
+      if(depth===0&&start!==-1){
+        var chunk=s.slice(start,i+1);
+        try{
+          var obj=JSON.parse(chunk);
+          if(obj&&typeof obj==='object') results.push(obj);
+        } catch(_){
+          // Try repairing just this chunk
+          try{
+            var fixed=repairJSON(chunk);
+            var obj2=JSON.parse(fixed);
+            if(obj2&&typeof obj2==='object') results.push(obj2);
+          }catch(__){}
+        }
+        start=-1;
+      }
+    }
+  }
+  return results.length ? results : null;
 }
 
 async function runCCSearch(){
@@ -3872,7 +3987,9 @@ async function runCCSearch(){
   if(searchBtn){searchBtn.disabled=true;searchBtn.style.opacity='0.5';}
 
   addCCLog('Initializing AI Lead Discovery Agent...','info');
-  addCCLog('Target: '+count+' '+bizType+' in '+location,'info');
+  var safeCount = collectQuality ? Math.min(count, 15) : Math.min(count, 30);
+  if(safeCount < count) addCCLog('Count capped to '+safeCount+' (quality analysis needs more tokens)','warn');
+  addCCLog('Target: '+safeCount+' '+bizType+' in '+location,'info');
   addCCLog('Filter: Businesses WITHOUT a website','warn');
   await sleep(500);
   addCCLog('Connecting to Groq Llama 3.3 70B...','info');
@@ -3887,22 +4004,23 @@ async function runCCSearch(){
   try{
     var data = await claudeFetch({
       model: GROQ_MODEL,
-      max_tokens: 4000,
-      system: 'You are a business lead intelligence agent. Generate realistic local business data as a JSON array. Return ONLY valid JSON array, no markdown, no explanation.',
+      max_tokens: 6000,
+      system: 'You are a business lead intelligence agent. Generate realistic local business data as a JSON array. CRITICAL: Return ONLY a valid, complete JSON array. No markdown fences, no explanation, no comments. Every string value must have properly escaped quotes. Do not truncate — complete all objects fully.',
       messages:[{role:'user',content:prompt}]
     });
     var reply = (data.content&&data.content[0])?data.content[0].text:'';
-    addCCLog('Response received. Parsing...','info');
+    addCCLog('Response received ('+reply.length+' chars). Parsing...','info');
 
-    var jsonMatch = reply.match(/\[[\s\S]*\]/);
-    if(!jsonMatch) throw new Error('No JSON found in response');
-    var leads = JSON.parse(jsonMatch[0]);
-    if(!Array.isArray(leads)||!leads.length) throw new Error('Empty result');
+    var leads = robustParseLeads(reply);
+    if(!leads||!leads.length) throw new Error('Could not parse any leads from response');
 
     leads.forEach(function(lead){
       if(!lead.maps_link){
         lead.maps_link='https://www.google.com/maps/search/'+encodeURIComponent((lead.name||bizType)+' '+location);
       }
+      // Ensure arrays exist
+      if(!Array.isArray(lead.website_mistakes)) lead.website_mistakes=[];
+      if(!Array.isArray(lead.website_disadvantages)) lead.website_disadvantages=[];
     });
 
     var noWebsite = leads.filter(function(l){return !l.has_website;});
