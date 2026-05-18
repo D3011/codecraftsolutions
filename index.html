@@ -331,6 +331,70 @@ tr:hover td{background:var(--surface2)}
   color:var(--text3);font-size:12px;font-weight:600;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif}
 .cc-tab.active{background:rgba(124,111,255,.15);color:var(--accent2);border-color:rgba(124,111,255,.4)}
 .needs-dev-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:20px;margin-bottom:16px}
+/* ── EMPLOYEE PROGRESS ── */
+.emp-progress-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px}
+.emp-progress-header{display:flex;align-items:center;gap:12px;margin-bottom:12px;cursor:pointer}
+.emp-progress-header .avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:700;font-size:14px;flex-shrink:0}
+.emp-prog-bar-wrap{background:var(--bg3);border-radius:4px;height:8px;overflow:hidden;margin:6px 0 4px}
+.emp-prog-bar{height:100%;border-radius:4px;transition:.5s}
+.task-deadline-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:6px}
+.deadline-badge{font-size:10px;padding:3px 8px;border-radius:10px;font-weight:700;border:1px solid}
+.deadline-badge.overdue{background:rgba(255,107,107,.12);color:var(--accent3);border-color:rgba(255,107,107,.3)}
+.deadline-badge.due-soon{background:rgba(255,179,71,.12);color:var(--amber);border-color:rgba(255,179,71,.3)}
+.deadline-badge.on-track{background:rgba(45,219,164,.12);color:var(--teal);border-color:rgba(45,219,164,.3)}
+.deadline-badge.no-dl{background:var(--bg3);color:var(--text3);border-color:var(--border)}
+/* ── CHAT ── */
+.chat-sidebar{width:240px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);border-radius:var(--radius) 0 0 var(--radius);overflow-y:auto}
+.chat-main{flex:1;display:flex;flex-direction:column;min-width:0}
+.chat-wrap{display:flex;height:calc(100vh - 220px);min-height:400px;max-height:700px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+@media(max-width:600px){.chat-sidebar{display:none}.chat-wrap{height:calc(100vh - 180px)}}
+.chat-user-item{padding:10px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);transition:.12s}
+.chat-user-item:hover,.chat-user-item.active{background:rgba(124,111,255,.1)}
+.chat-user-item .chat-user-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-user-item .chat-user-role{font-size:10px;color:var(--text3)}
+.chat-user-item .chat-unread{background:var(--accent3);color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:2px 6px;margin-left:auto;flex-shrink:0}
+.chat-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--bg2)}
+.chat-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:8px}
+.chat-msg{max-width:75%;display:flex;flex-direction:column;gap:2px}
+.chat-msg.mine{align-self:flex-end;align-items:flex-end}
+.chat-msg.theirs{align-self:flex-start;align-items:flex-start}
+.chat-bubble{padding:9px 13px;border-radius:16px;font-size:13px;line-height:1.5;word-break:break-word}
+.chat-msg.mine .chat-bubble{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-bottom-right-radius:4px}
+.chat-msg.theirs .chat-bubble{background:var(--bg3);color:var(--text);border-bottom-left-radius:4px;border:1px solid var(--border)}
+.chat-msg-meta{font-size:10px;color:var(--text3);padding:0 4px}
+.chat-input-row{padding:12px 14px;border-top:1px solid var(--border);display:flex;gap:8px;background:var(--bg2)}
+.chat-input{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:10px 16px;color:var(--text);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:.15s}
+.chat-input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(124,111,255,.12)}
+.chat-send-btn{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.15s}
+.chat-send-btn:hover{transform:scale(1.08)}
+.chat-group-header{padding:10px 14px;font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;background:var(--bg2);border-bottom:1px solid var(--border)}
+.chat-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--text3);gap:8px;font-size:13px}
+.wq-panel{margin-top:10px;border-top:1px solid var(--border);padding-top:10px}
+.wq-toggle{background:none;border:none;color:var(--accent2);font-size:11px;font-weight:600;cursor:pointer;
+  font-family:'DM Sans',sans-serif;padding:0;display:flex;align-items:center;gap:5px;transition:.15s}
+.wq-toggle:hover{color:var(--accent)}
+.wq-body{display:none;margin-top:10px;display:none}
+.wq-body.open{display:block}
+.wq-score-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.wq-score-circle{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:'Syne',sans-serif;font-size:15px;font-weight:800;flex-shrink:0;border:2px solid currentColor}
+.wq-score-circle.score-high{color:var(--teal);background:rgba(45,219,164,.1)}
+.wq-score-circle.score-mid{color:var(--amber);background:rgba(255,179,71,.1)}
+.wq-score-circle.score-low{color:var(--accent3);background:rgba(255,107,107,.1)}
+.wq-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em}
+.wq-label.score-high{color:var(--teal)}
+.wq-label.score-mid{color:var(--amber)}
+.wq-label.score-low{color:var(--accent3)}
+.wq-bar-track{height:5px;background:var(--bg4);border-radius:3px;flex:1;overflow:hidden}
+.wq-bar-fill{height:100%;border-radius:3px;transition:.4s}
+.wq-section-title{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;
+  letter-spacing:.07em;margin:8px 0 5px}
+.wq-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:4px}
+.wq-list li{font-size:11px;color:var(--text2);background:var(--bg3);border-radius:6px;
+  padding:5px 9px;display:flex;align-items:flex-start;gap:6px;line-height:1.4}
+.wq-list li .wq-dot{flex-shrink:0;margin-top:3px;width:5px;height:5px;border-radius:50%}
+.wq-list.mistakes li .wq-dot{background:var(--accent3)}
+.wq-list.disadv li .wq-dot{background:var(--amber)}
 
 /* ── DESKTOP ENHANCEMENTS ── */
 @media(min-width:1200px){
@@ -920,6 +984,7 @@ tr:hover td{background:var(--surface2)}
             <label class="cc-check-label"><input type="checkbox" id="cc-d-rating"> ⭐ Rating & Reviews</label>
             <label class="cc-check-label"><input type="checkbox" id="cc-d-hours"> 🕐 Business Hours</label>
             <label class="cc-check-label"><input type="checkbox" id="cc-d-website" checked> 🌐 Website URL</label>
+            <label class="cc-check-label"><input type="checkbox" id="cc-d-quality" checked> 📊 Website Quality Analysis</label>
           </div>
         </div>
 
@@ -1055,6 +1120,68 @@ tr:hover td{background:var(--surface2)}
       </div>
       <div id="sl-stat-row" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px"></div>
       <div id="shared-leads-list"></div>
+    </div>
+
+    <!-- EMPLOYEE PROGRESS (Developer only) -->
+    <div class="page" id="page-progress">
+      <div class="page-header" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;margin-bottom:20px">
+        <div>
+          <h2 style="font-family:'Syne',sans-serif;font-weight:700">Employee Progress</h2>
+          <p style="color:var(--text3);font-size:14px;margin-top:4px">Live task progress & performance overview for all team members</p>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <select id="prog-filter-role" onchange="loadEmployeeProgress()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius2);padding:8px 12px;color:var(--text);font-size:13px;outline:none">
+            <option value="">All Roles</option>
+            <option value="marketer">Marketer</option>
+            <option value="tester">Tester</option>
+            <option value="viewer">Viewer</option>
+          </select>
+          <select id="prog-filter-status" onchange="loadEmployeeProgress()" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius2);padding:8px 12px;color:var(--text);font-size:13px;outline:none">
+            <option value="">All Statuses</option>
+            <option value="pending">Has Pending</option>
+            <option value="done">Completed All</option>
+            <option value="overdue">Has Overdue</option>
+          </select>
+        </div>
+      </div>
+      <div id="prog-stat-row" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px"></div>
+      <div id="prog-employee-list"></div>
+    </div>
+
+    <!-- TEAM CHAT (All roles) -->
+    <div class="page" id="page-chat">
+      <div class="page-header" style="margin-bottom:16px">
+        <h2 style="font-family:'Syne',sans-serif;font-weight:700">Team Chat</h2>
+        <p style="color:var(--text3);font-size:14px;margin-top:4px">Message your team members directly</p>
+      </div>
+      <div class="chat-wrap" id="chat-wrap">
+        <!-- Left: contacts -->
+        <div class="chat-sidebar" id="chat-contacts">
+          <div class="chat-group-header">Team Members</div>
+          <div id="chat-contact-list"></div>
+        </div>
+        <!-- Right: messages -->
+        <div class="chat-main">
+          <div class="chat-header" id="chat-header">
+            <div class="chat-empty" style="padding:0;flex-direction:row;gap:8px">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              <span style="font-size:13px;font-weight:600">Select a person to chat</span>
+            </div>
+          </div>
+          <div class="chat-messages" id="chat-messages">
+            <div class="chat-empty">
+              <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="opacity:.3"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+              <span>Pick a team member to start chatting</span>
+            </div>
+          </div>
+          <div class="chat-input-row" id="chat-input-row" style="display:none">
+            <input type="text" class="chat-input" id="chat-input" placeholder="Type a message…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChatMsg();}">
+            <button class="chat-send-btn" onclick="sendChatMsg()">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
   </main>
@@ -1244,19 +1371,22 @@ var BOTTOM_NAV_ICONS={
   testing:'<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
   reports:'<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>',
   cc:'<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
-  'shared-leads':'<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>'
+  'shared-leads':'<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>',
+  progress:'<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+  chat:'<svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>'
 };
 var BOTTOM_NAV_LABELS={home:'Home',users:'Users',tasks:'Tasks',clients:'Clients',
-  builder:'Builder',intake:'Intake',testing:'Testing',reports:'Reports','shared-leads':'Leads'};
+  builder:'Builder',intake:'Intake',testing:'Testing',reports:'Reports',
+  'shared-leads':'Leads',progress:'Progress',chat:'Chat'};
 
 function buildBottomNav(){
   var bn=document.getElementById('bottom-nav');
   if(!bn||!currentUser)return;
   var navDef={
-    developer:['home','cc','builder','clients','reports'],
-    marketer:['home','intake','shared-leads','reports'],
-    tester:['home','testing','reports'],
-    viewer:['home','reports']
+    developer:['home','tasks','progress','chat','cc'],
+    marketer:['home','intake','shared-leads','chat','reports'],
+    tester:['home','testing','chat','reports'],
+    viewer:['home','chat','reports']
   };
   var items=(navDef[currentUser.role]||['home','reports']).slice(0,5);
   bn.innerHTML=items.map(function(id){
@@ -1513,24 +1643,29 @@ const NAV_DEF={
     {id:'home',label:'Dashboard',icon:'home'},
     {id:'users',label:'User Management',icon:'users'},
     {id:'tasks',label:'Task Manager',icon:'check'},
+    {id:'progress',label:'Employee Progress',icon:'progress'},
     {id:'clients',label:'Client Queue',icon:'inbox'},
     {id:'builder',label:'AI Website Builder',icon:'code'},
     {id:'cc',label:'Collect Clients',icon:'cc'},
+    {id:'chat',label:'Team Chat',icon:'chat'},
     {id:'reports',label:'Reports',icon:'file'},
   ],
   marketer:[
     {id:'home',label:'Dashboard',icon:'home'},
     {id:'intake',label:'Client Intake',icon:'edit'},
     {id:'shared-leads',label:'Shared Leads',icon:'share'},
+    {id:'chat',label:'Team Chat',icon:'chat'},
     {id:'reports',label:'Reports',icon:'file'},
   ],
   tester:[
     {id:'home',label:'Dashboard',icon:'home'},
     {id:'testing',label:'Testing Portal',icon:'shield'},
+    {id:'chat',label:'Team Chat',icon:'chat'},
     {id:'reports',label:'Reports',icon:'file'},
   ],
   viewer:[
     {id:'home',label:'Dashboard',icon:'home'},
+    {id:'chat',label:'Team Chat',icon:'chat'},
     {id:'reports',label:'Reports',icon:'file'},
   ]
 };
@@ -1544,7 +1679,9 @@ const ICONS={
   edit:'<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>',
   shield:'<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
   cc:'<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>',
-  share:'<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>'
+  share:'<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>',
+  progress:'<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>',
+  chat:'<svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>'
 };
 
 function buildNav(){
@@ -1579,6 +1716,8 @@ function showPage(id){
   if(id==='builder')loadBuilderClientSelect();
   if(id==='cc')initCCPage();
   if(id==='shared-leads')loadSharedLeads();
+  if(id==='progress')loadEmployeeProgress();
+  if(id==='chat')initChat();
 }
 
 // ─── HOME ────────────────────────────────────────────────────
@@ -1795,6 +1934,8 @@ function loadTasks(){
   if(!tasks.length){el.innerHTML='<div class="empty-state" style="grid-column:1/-1"><div class="es-icon">📋</div><p>No tasks assigned yet</p></div>';return;}
   el.innerHTML=tasks.map(t=>{
     const assignee=users.find(u=>u.id===t.assignedTo);
+    const dlBadge=getDeadlineBadge(t.due);
+    const isDev=currentUser.role==='developer';
     return `<div class="task-card">
       <div class="task-header">
         <div style="flex:1">
@@ -1802,20 +1943,33 @@ function loadTasks(){
           <div class="task-meta">
             <span>👤 ${assignee?esc(assignee.name):'Unassigned'}</span>
             <span class="chip">${t.priority}</span>
-            ${t.due?`<span>📅 ${t.due}</span>`:''}
           </div>
         </div>
         <span class="status-badge ${t.status}">${cap(t.status)}</span>
       </div>
       <p class="text-sm text-muted" style="margin:8px 0">${esc(t.desc||'').slice(0,100)}</p>
+      <div class="task-deadline-row">
+        ${dlBadge}
+        ${isDev?`<button class="btn btn-secondary btn-sm" style="font-size:10px;padding:3px 9px" onclick="openDeadlineModal('${t.id}')">✏️ Set Deadline</button>`:''}
+      </div>
       <div class="flex gap-8" style="margin-top:10px">
         <select onchange="updateTaskStatus('${t.id}',this.value)" style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-size:14px;flex:1">
           ${['pending','in-progress','testing','done'].map(s=>`<option value="${s}" ${t.status===s?'selected':''}>${cap(s)}</option>`).join('')}
         </select>
-        <button class="btn btn-danger btn-sm" onclick="deleteTask('${t.id}')">Delete</button>
+        ${isDev?`<button class="btn btn-danger btn-sm" onclick="deleteTask('${t.id}')">Delete</button>`:''}
       </div>
     </div>`;
   }).join('');
+}
+
+function getDeadlineBadge(due){
+  if(!due) return '<span class="deadline-badge no-dl">📅 No deadline</span>';
+  const d=new Date(due);
+  const now=new Date();
+  const diff=Math.ceil((d-now)/(1000*60*60*24));
+  if(diff<0) return '<span class="deadline-badge overdue">🔴 Overdue by '+Math.abs(diff)+'d</span>';
+  if(diff<=3) return '<span class="deadline-badge due-soon">🟡 Due in '+diff+'d</span>';
+  return '<span class="deadline-badge on-track">🟢 Due '+d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'})+'</span>';
 }
 
 function openTaskModal(){
@@ -2769,6 +2923,11 @@ function exportCCLeads(){
       'Business Name':l.name||'',
       'Type':l.type||'',
       'Has Website':l.has_website?'Yes':'No',
+      'Website URL':l.website_url||'',
+      'Website Quality Score':l.website_quality_score!=null?l.website_quality_score:'',
+      'Quality Label':l.website_quality_label||'',
+      'Website Mistakes':(l.website_mistakes||[]).join(' | '),
+      'Website Disadvantages':(l.website_disadvantages||[]).join(' | '),
       'Phone':l.phone||'',
       'Email':l.email||'',
       'Address':l.address||'',
@@ -2784,7 +2943,7 @@ function exportCCLeads(){
   });
   var wb = XLSX.utils.book_new();
   var ws = XLSX.utils.json_to_sheet(rows);
-  ws['!cols']=[{wch:25},{wch:18},{wch:10},{wch:16},{wch:28},{wch:35},{wch:20},{wch:8},{wch:8},{wch:20},{wch:50},{wch:14},{wch:12},{wch:20}];
+  ws['!cols']=[{wch:25},{wch:18},{wch:10},{wch:35},{wch:14},{wch:12},{wch:50},{wch:50},{wch:16},{wch:28},{wch:35},{wch:20},{wch:8},{wch:8},{wch:20},{wch:50},{wch:14},{wch:12},{wch:20}];
   XLSX.utils.book_append_sheet(wb,ws,'CC Leads');
   var country=document.getElementById('cc-country').value||'leads';
   var bizType=document.getElementById('cc-biz-type').value||'business';
@@ -3113,6 +3272,7 @@ function renderSharedLeads(batches){
         html+='</div>';
       }
       if(lead.desc) html+='<div class="text-sm text-muted" style="margin-bottom:10px;line-height:1.5">'+esc(lead.desc.slice(0,100))+(lead.desc.length>100?'…':'')+'</div>';
+      html+=buildWebsiteQualityHTML(lead,'sl-'+batch.id+'-'+lead.name.replace(/\s/g,'_').slice(0,10));
       html+='<div class="cc-lead-actions">';
       if(lead.phone) html+='<a href="tel:'+esc(lead.phone)+'" class="btn btn-teal btn-sm" style="text-decoration:none;font-size:11px">&#128222; Call</a>';
       if(lead.email) html+='<a href="mailto:'+esc(lead.email)+'" class="btn btn-teal btn-sm" style="text-decoration:none;font-size:11px">&#128231; Email</a>';
@@ -3123,6 +3283,311 @@ function renderSharedLeads(batches){
   el.innerHTML=html;
 }
 
+
+// ═══════════════════════════════════════════════════════════════
+// EMPLOYEE PROGRESS
+// ═══════════════════════════════════════════════════════════════
+function loadEmployeeProgress(){
+  var roleFilter  = (document.getElementById('prog-filter-role')||{}).value||'';
+  var statFilter  = (document.getElementById('prog-filter-status')||{}).value||'';
+  var allUsers    = getUsers().filter(u=>u.id!=='dev-1');
+  var allTasks    = getTasks();
+
+  if(roleFilter) allUsers = allUsers.filter(u=>u.role===roleFilter);
+
+  // stat chips
+  var statRow = document.getElementById('prog-stat-row');
+  if(statRow){
+    var totalTasks   = allTasks.length;
+    var doneTasks    = allTasks.filter(t=>t.status==='done').length;
+    var overdueTasks = allTasks.filter(t=>t.due&&new Date(t.due)<new Date()&&t.status!=='done').length;
+    statRow.innerHTML=[
+      {label:'Total Employees', val:allUsers.length, color:'var(--accent2)'},
+      {label:'Total Tasks',     val:totalTasks,       color:'var(--text2)'},
+      {label:'Completed',       val:doneTasks,        color:'var(--teal)'},
+      {label:'Overdue',         val:overdueTasks,     color:'var(--accent3)'}
+    ].map(s=>'<div class="cc-stat-chip"><span style="color:'+s.color+';font-size:18px;font-weight:700">'+s.val+'</span><span style="color:var(--text3);margin-left:5px">'+s.label+'</span></div>').join('');
+  }
+
+  var el = document.getElementById('prog-employee-list');
+  if(!el) return;
+
+  var filtered = allUsers.filter(u=>{
+    var uTasks = allTasks.filter(t=>t.assignedTo===u.id);
+    if(statFilter==='done') return uTasks.length && uTasks.every(t=>t.status==='done');
+    if(statFilter==='pending') return uTasks.some(t=>t.status!=='done');
+    if(statFilter==='overdue') return uTasks.some(t=>t.due&&new Date(t.due)<new Date()&&t.status!=='done');
+    return true;
+  });
+
+  if(!filtered.length){
+    el.innerHTML='<div class="empty-state"><div class="es-icon">👥</div><p>No employees match this filter</p></div>';
+    return;
+  }
+
+  el.innerHTML = filtered.map(u=>{
+    var uTasks  = allTasks.filter(t=>t.assignedTo===u.id);
+    var done    = uTasks.filter(t=>t.status==='done').length;
+    var inProg  = uTasks.filter(t=>t.status==='in-progress').length;
+    var pending = uTasks.filter(t=>t.status==='pending').length;
+    var testing = uTasks.filter(t=>t.status==='testing').length;
+    var overdue = uTasks.filter(t=>t.due&&new Date(t.due)<new Date()&&t.status!=='done').length;
+    var pct     = uTasks.length ? Math.round(done/uTasks.length*100) : 0;
+    var barClr  = pct>=80?'var(--teal)':pct>=40?'var(--amber)':'var(--accent3)';
+    var clr     = roleColor(u.role);
+
+    var tasksHTML = uTasks.length ? uTasks.map(t=>{
+      var dlBadge = getDeadlineBadge(t.due);
+      return `<div style="background:var(--bg3);border-radius:8px;padding:10px 12px;margin-bottom:6px;border:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap">
+          <div style="flex:1;min-width:0">
+            <div style="font-size:13px;font-weight:600;margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(t.title)}</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+              <span class="chip" style="font-size:10px">${t.priority}</span>
+              ${dlBadge}
+              ${t.due_note?'<span style="font-size:10px;color:var(--accent2);background:rgba(124,111,255,.1);border-radius:4px;padding:2px 6px">💬 '+esc(t.due_note)+'</span>':''}
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-shrink:0;align-items:center">
+            <span class="status-badge ${t.status}" style="font-size:10px">${cap(t.status)}</span>
+            <button class="btn btn-secondary btn-sm" style="font-size:10px;padding:3px 8px" onclick="openDeadlineModal('${t.id}')">📅</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('') : '<div class="text-sm text-muted" style="padding:8px 0">No tasks assigned yet.</div>';
+
+    return `<div class="emp-progress-card">
+      <div class="emp-progress-header" onclick="toggleEmpTasks('ep-${u.id}')">
+        <div class="avatar" style="background:${clr}22;color:${clr}">${u.name.slice(0,2).toUpperCase()}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:700">${esc(u.name)}</div>
+          <div style="font-size:11px;color:var(--text3)">${cap(u.role)} ${u.title?'· '+esc(u.title):''}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:18px;font-weight:800;color:${barClr}">${pct}%</div>
+          <div style="font-size:10px;color:var(--text3)">${done}/${uTasks.length} done</div>
+        </div>
+        <span style="color:var(--text3);margin-left:6px;font-size:12px" id="ep-arr-${u.id}">▸</span>
+      </div>
+      <div class="emp-prog-bar-wrap"><div class="emp-prog-bar" style="width:${pct}%;background:${barClr}"></div></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px">
+        ${[{l:'Pending',v:pending,c:'var(--text3)'},{l:'In Progress',v:inProg,c:'var(--amber)'},{l:'Testing',v:testing,c:'var(--accent2)'},{l:'Done',v:done,c:'var(--teal)'},{l:'Overdue',v:overdue,c:'var(--accent3)'}]
+          .filter(s=>s.v>0)
+          .map(s=>'<span style="font-size:11px;background:var(--bg3);border-radius:6px;padding:3px 9px;color:'+s.c+'">'+s.l+': <strong>'+s.v+'</strong></span>').join('')}
+      </div>
+      <div id="ep-${u.id}" style="display:none">${tasksHTML}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleEmpTasks(id){
+  var el=document.getElementById(id);
+  if(!el)return;
+  var uid=id.replace('ep-','');
+  var arr=document.getElementById('ep-arr-'+uid);
+  var open=el.style.display==='none';
+  el.style.display=open?'block':'none';
+  if(arr)arr.textContent=open?'▾':'▸';
+}
+
+// ─── DEADLINE ────────────────────────────────────────────────
+var _deadlineTaskId = null;
+function openDeadlineModal(taskId){
+  _deadlineTaskId = taskId;
+  var t = getTasks().find(x=>x.id===taskId);
+  if(!t) return;
+  var users = getUsers();
+  var assignee = users.find(u=>u.id===t.assignedTo);
+  var info = document.getElementById('dl-task-info');
+  if(info) info.innerHTML = '<strong>'+esc(t.title)+'</strong>'
+    +(assignee?'<div style="margin-top:4px;font-size:12px;color:var(--text3)">Assigned to: '+esc(assignee.name)+'</div>':'');
+  var dlDate = document.getElementById('dl-date');
+  if(dlDate) dlDate.value = t.due||'';
+  var dlNote = document.getElementById('dl-note');
+  if(dlNote) dlNote.value = t.due_note||'';
+  document.getElementById('modal-deadline').style.display='flex';
+}
+function saveDeadline(){
+  if(!_deadlineTaskId) return;
+  var date = document.getElementById('dl-date').value;
+  var note = document.getElementById('dl-note').value.trim();
+  if(!date){notify('Please pick a date','error');return;}
+  var tasks = getTasks();
+  var t = tasks.find(x=>x.id===_deadlineTaskId);
+  if(t){ t.due=date; t.due_note=note; saveTasks(tasks); }
+  closeModal('modal-deadline');
+  notify('Deadline saved!','success');
+  addActivity('Deadline set for "'+t.title+'" → '+date,'info');
+  if(document.getElementById('page-tasks').classList.contains('active')) loadTasks();
+  if(document.getElementById('page-progress').classList.contains('active')) loadEmployeeProgress();
+}
+function clearDeadline(){
+  if(!_deadlineTaskId) return;
+  var tasks = getTasks();
+  var t = tasks.find(x=>x.id===_deadlineTaskId);
+  if(t){ t.due=''; t.due_note=''; saveTasks(tasks); }
+  closeModal('modal-deadline');
+  notify('Deadline removed','success');
+  if(document.getElementById('page-tasks').classList.contains('active')) loadTasks();
+  if(document.getElementById('page-progress').classList.contains('active')) loadEmployeeProgress();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TEAM CHAT
+// ═══════════════════════════════════════════════════════════════
+function getChatMessages(){return JSON.parse(localStorage.getItem('ccs_chat')||'[]');}
+function saveChatMessages(m){localStorage.setItem('ccs_chat',JSON.stringify(m));}
+function getChatKey(a,b){return [a,b].sort().join('__');}
+
+var _chatPartner = null;
+var _chatPollTimer = null;
+var _chatLastCount = 0;
+
+function initChat(){
+  renderChatContacts();
+  if(_chatPartner) openChat(_chatPartner);
+  startChatPoll();
+}
+
+function renderChatContacts(){
+  var el = document.getElementById('chat-contact-list');
+  if(!el) return;
+  var users = getUsers().filter(u=>u.id!==currentUser.id&&u.active!==false);
+  var msgs = getChatMessages();
+  var html='';
+  users.forEach(function(u){
+    var key = getChatKey(currentUser.id, u.id);
+    var convo = msgs.filter(m=>m.key===key);
+    var unread = convo.filter(m=>m.to===currentUser.id&&!m.read).length;
+    var last = convo.length ? convo[convo.length-1] : null;
+    var clr = roleColor(u.role);
+    html+='<div class="chat-user-item'+((_chatPartner&&_chatPartner.id===u.id)?' active':'')+'" onclick="openChat('+JSON.stringify({id:u.id,name:u.name,role:u.role}).replace(/"/g,'&quot;')+')" data-uid="'+u.id+'">';
+    html+='<div class="avatar" style="width:36px;height:36px;font-size:12px;flex-shrink:0;background:'+clr+'22;color:'+clr+'">'+u.name.slice(0,2).toUpperCase()+'</div>';
+    html+='<div style="flex:1;min-width:0">';
+    html+='<div class="chat-user-name">'+esc(u.name)+'</div>';
+    html+='<div class="chat-user-role">'+cap(u.role)+(last?'<span style="color:var(--text3)"> · '+(last.text.slice(0,20)||'…')+'</span>':'')+'</div>';
+    html+='</div>';
+    if(unread) html+='<span class="chat-unread">'+unread+'</span>';
+    html+='</div>';
+  });
+  if(!users.length) html='<div class="text-sm text-muted" style="padding:16px">No other team members yet.</div>';
+  el.innerHTML=html;
+}
+
+function openChat(partner){
+  if(typeof partner==='string') partner=JSON.parse(partner.replace(/&quot;/g,'"'));
+  _chatPartner=partner;
+  // mark messages as read
+  var msgs=getChatMessages();
+  msgs.forEach(function(m){if(m.key===getChatKey(currentUser.id,partner.id)&&m.to===currentUser.id)m.read=true;});
+  saveChatMessages(msgs);
+  renderChatContacts();
+  // header
+  var header=document.getElementById('chat-header');
+  var clr=roleColor(partner.role);
+  if(header) header.innerHTML='<div class="avatar" style="width:36px;height:36px;font-size:12px;flex-shrink:0;background:'+clr+'22;color:'+clr+'">'+partner.name.slice(0,2).toUpperCase()+'</div>'
+    +'<div><div style="font-size:14px;font-weight:600">'+esc(partner.name)+'</div><div style="font-size:11px;color:var(--text3)">'+cap(partner.role)+'</div></div>';
+  // show input
+  var row=document.getElementById('chat-input-row');
+  if(row) row.style.display='flex';
+  renderChatMessages();
+  setTimeout(scrollChatBottom,50);
+  var inp=document.getElementById('chat-input');
+  if(inp) inp.focus();
+}
+
+function renderChatMessages(){
+  if(!_chatPartner) return;
+  var msgs=getChatMessages().filter(m=>m.key===getChatKey(currentUser.id,_chatPartner.id));
+  var el=document.getElementById('chat-messages');
+  if(!el) return;
+  if(!msgs.length){
+    el.innerHTML='<div class="chat-empty"><svg width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" style="opacity:.25"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><span>No messages yet. Say hi! 👋</span></div>';
+    return;
+  }
+  var html='';
+  var lastDate='';
+  msgs.forEach(function(m){
+    var d=new Date(m.at);
+    var dateStr=d.toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
+    if(dateStr!==lastDate){
+      html+='<div style="text-align:center;font-size:10px;color:var(--text3);margin:8px 0">'+dateStr+'</div>';
+      lastDate=dateStr;
+    }
+    var mine=m.from===currentUser.id;
+    var timeStr=d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    html+='<div class="chat-msg '+(mine?'mine':'theirs')+'">';
+    html+='<div class="chat-bubble">'+esc(m.text)+'</div>';
+    html+='<div class="chat-msg-meta">'+timeStr+(mine?'':', '+esc(m.fromName))+'</div>';
+    html+='</div>';
+  });
+  el.innerHTML=html;
+}
+
+function scrollChatBottom(){
+  var el=document.getElementById('chat-messages');
+  if(el) el.scrollTop=el.scrollHeight;
+}
+
+function sendChatMsg(){
+  if(!_chatPartner) return;
+  var inp=document.getElementById('chat-input');
+  var text=(inp?inp.value:'').trim();
+  if(!text) return;
+  var msgs=getChatMessages();
+  msgs.push({
+    id:'cm-'+Date.now(),
+    key:getChatKey(currentUser.id,_chatPartner.id),
+    from:currentUser.id,fromName:currentUser.name,
+    to:_chatPartner.id,
+    text:text,
+    at:new Date().toISOString(),
+    read:false
+  });
+  saveChatMessages(msgs);
+  if(inp) inp.value='';
+  renderChatMessages();
+  renderChatContacts();
+  setTimeout(scrollChatBottom,30);
+}
+
+function startChatPoll(){
+  if(_chatPollTimer) clearInterval(_chatPollTimer);
+  _chatPollTimer=setInterval(function(){
+    var msgs=getChatMessages();
+    var unread=msgs.filter(m=>m.to===currentUser.id&&!m.read).length;
+    // Update unread badge on chat nav item
+    var navChat=document.getElementById('nav-chat');
+    var bnChat=document.getElementById('bn-chat');
+    if(navChat){
+      var badge=navChat.querySelector('.nav-chat-badge');
+      if(unread>0){
+        if(!badge){badge=document.createElement('span');badge.className='nav-chat-badge';badge.style.cssText='background:var(--accent3);color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:1px 5px;margin-left:auto';navChat.appendChild(badge);}
+        badge.textContent=unread;
+      } else if(badge) badge.remove();
+    }
+    if(bnChat){
+      var bbadge=bnChat.querySelector('.bn-chat-badge');
+      if(unread>0){
+        if(!bbadge){bbadge=document.createElement('span');bbadge.className='bn-chat-badge';bbadge.style.cssText='position:absolute;top:3px;right:6px;background:var(--accent3);color:#fff;font-size:8px;font-weight:700;border-radius:8px;padding:1px 4px';bnChat.style.position='relative';bnChat.appendChild(bbadge);}
+        bbadge.textContent=unread;
+      } else if(bbadge) bbadge.remove();
+    }
+    // If chat page is open, refresh messages
+    if(_chatPartner&&document.getElementById('page-chat').classList.contains('active')){
+      var newCount=msgs.filter(m=>m.key===getChatKey(currentUser.id,_chatPartner.id)).length;
+      if(newCount!==_chatLastCount){
+        _chatLastCount=newCount;
+        // mark read
+        msgs.forEach(function(m){if(m.key===getChatKey(currentUser.id,_chatPartner.id)&&m.to===currentUser.id)m.read=true;});
+        saveChatMessages(msgs);
+        renderChatMessages();
+        renderChatContacts();
+        setTimeout(scrollChatBottom,30);
+      }
+    }
+  },2000);
+}
 
 // ─── CC STATE DATA ───────────────────────────────────────────
 var CC_STATES = {
@@ -3200,6 +3665,66 @@ function renderCCStats(leads, noWebsiteCount){
   updateCCShareCount();
 }
 
+// ─── WEBSITE QUALITY PANEL BUILDER ──────────────────────────
+function buildWebsiteQualityHTML(lead, uid){
+  if(!lead.has_website && !lead.website_url) return '';
+  var score = lead.website_quality_score;
+  var label = lead.website_quality_label || '';
+  var mistakes = Array.isArray(lead.website_mistakes) ? lead.website_mistakes : [];
+  var disadvs  = Array.isArray(lead.website_disadvantages) ? lead.website_disadvantages : [];
+  if(score == null && !mistakes.length && !disadvs.length) return '';
+
+  var cls = score>=7?'high':score>=4?'mid':'low';
+  var barColor = score>=7?'var(--teal)':score>=4?'var(--amber)':'var(--accent3)';
+  var barPct = score ? Math.round(score*10) : 0;
+
+  var html = '<div class="wq-panel">';
+  html += '<button class="wq-toggle" onclick="toggleWQ(\''+uid+'\')">'
+        + '📊 Website Quality Analysis <span id="wq-arrow-'+uid+'">▸</span></button>';
+  html += '<div class="wq-body" id="wq-body-'+uid+'">';
+
+  // Score row
+  if(score != null){
+    html += '<div class="wq-score-row">';
+    html += '<div class="wq-score-circle score-'+cls+'">'+score+'</div>';
+    html += '<div style="flex:1">';
+    html += '<div class="wq-label score-'+cls+'">'+(label||'Score')+' — '+score+'/10</div>';
+    html += '<div class="wq-bar-track" style="margin-top:5px"><div class="wq-bar-fill" style="width:'+barPct+'%;background:'+barColor+'"></div></div>';
+    html += '</div></div>';
+  }
+
+  // Mistakes
+  if(mistakes.length){
+    html += '<div class="wq-section-title">⚠️ Website Mistakes</div>';
+    html += '<ul class="wq-list mistakes">';
+    mistakes.forEach(function(m){
+      html += '<li><span class="wq-dot"></span>'+esc(m)+'</li>';
+    });
+    html += '</ul>';
+  }
+
+  // Disadvantages
+  if(disadvs.length){
+    html += '<div class="wq-section-title">📉 Business Disadvantages</div>';
+    html += '<ul class="wq-list disadv">';
+    disadvs.forEach(function(d){
+      html += '<li><span class="wq-dot"></span>'+esc(d)+'</li>';
+    });
+    html += '</ul>';
+  }
+
+  html += '</div></div>';
+  return html;
+}
+
+function toggleWQ(uid){
+  var body = document.getElementById('wq-body-'+uid);
+  var arrow = document.getElementById('wq-arrow-'+uid);
+  if(!body) return;
+  var open = body.classList.toggle('open');
+  if(arrow) arrow.textContent = open ? '▾' : '▸';
+}
+
 function renderCCResults(leads){
   var el = document.getElementById('cc-results-container');
   var countEl = document.getElementById('cc-result-count');
@@ -3238,6 +3763,7 @@ function renderCCResults(leads){
     html += '<span style="font-size:15px;font-weight:700;color:'+potColor+'">'+potScore+'/10</span>';
     if(noSite&&lead.no_website_reason) html += '<span style="font-size:10px;color:var(--text3);background:var(--bg3);padding:2px 6px;border-radius:4px">'+esc(lead.no_website_reason.replace(/_/g,' '))+'</span>';
     html += '</div>';
+    html += buildWebsiteQualityHTML(lead, 'cc-'+realIdx);
     html += '<div class="cc-lead-actions">';
     if(lead.maps_link) html += '<a href="'+lead.maps_link+'" target="_blank" class="btn btn-secondary btn-sm" style="text-decoration:none;font-size:11px">&#128205; Maps</a>';
     if(lead.phone) html += '<a href="tel:'+esc(lead.phone)+'" class="btn btn-secondary btn-sm" style="text-decoration:none;font-size:11px">&#128222; Call</a>';
@@ -3288,12 +3814,22 @@ function buildCCPrompt(bizType, location, country, state, city, count, opts){
   if(opts.collectRating) fields.push('rating (3.0-5.0)','review_count (5-500)');
   if(opts.collectHours) fields.push('hours (e.g. Mon-Sat 9AM-8PM)');
   fields.push('potential_score (1-10)','owner_name','established_year (1990-2023)');
+  if(opts.collectQuality){
+    fields.push(
+      'website_quality_score (integer 1-10, only if has_website=true — evaluate based on typical SMB websites in '+country+'; null if no website)',
+      'website_quality_label (string: "Poor" if 1-3, "Average" if 4-6, "Good" if 7-8, "Excellent" if 9-10; null if no website)',
+      'website_mistakes (array of 2-4 short strings describing specific technical/design/UX mistakes on the existing site — e.g. "No mobile responsive design", "Missing SSL certificate", "No clear call-to-action button", "Outdated Flash-based animations"; empty array if no website)',
+      'website_disadvantages (array of 2-3 short strings describing business disadvantages caused by the poor website — e.g. "Losing customers to competitors with better online presence", "Cannot accept online orders", "Low search engine visibility"; empty array if no website)'
+    );
+  }
 
   return 'Generate a JSON array of exactly '+count+' '+bizType+' businesses in '+location+'.\n'
     +'Rules: 70% must have has_website=false. Names must be culturally realistic for '+country+'.\n'
     +'Phone format must match '+country+'. Addresses must be realistic for '+location+'.\n'
-    +'For businesses WITH a website, generate a plausible website_url. For businesses without, set website_url to null.\n'
-    +'Each object must have: '+fields.join(', ')+'\n'
+    +'For businesses WITH a website: generate a plausible website_url'
+    +(opts.collectQuality?', a realistic website_quality_score, specific website_mistakes, and website_disadvantages.':'. ')
+    +'\nFor businesses WITHOUT a website: website_url=null'+(opts.collectQuality?', website_quality_score=null, website_mistakes=[], website_disadvantages=[].':'. ')
+    +'\nEach object must have: '+fields.join(', ')+'\n'
     +'Return ONLY the JSON array. No explanation, no markdown.';
 }
 
@@ -3314,6 +3850,7 @@ async function runCCSearch(){
   var collectRating = document.getElementById('cc-d-rating').checked;
   var collectHours = document.getElementById('cc-d-hours').checked;
   var collectWebsite = document.getElementById('cc-d-website').checked;
+  var collectQuality = document.getElementById('cc-d-quality').checked;
 
   var location = [city,state,country].filter(Boolean).join(', ');
 
@@ -3345,7 +3882,7 @@ async function runCCSearch(){
   var prompt = buildCCPrompt(bizType, location, country, state, city, count,
     {collectPhone:collectPhone,collectEmail:collectEmail,collectMaps:collectMaps,
      collectAddress:collectAddress,collectRating:collectRating,collectHours:collectHours,
-     collectWebsite:collectWebsite});
+     collectWebsite:collectWebsite,collectQuality:collectQuality});
 
   try{
     var data = await claudeFetch({
@@ -3408,6 +3945,31 @@ async function runCCSearch(){
 }
 
 </script>
+
+<div id="modal-deadline" class="modal-bg" style="display:none" onclick="if(event.target===this)closeModal('modal-deadline')">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-header">
+      <h3>✏️ Set / Update Deadline</h3>
+      <button class="modal-close" onclick="closeModal('modal-deadline')">✕</button>
+    </div>
+    <div class="modal-body" style="display:flex;flex-direction:column;gap:14px">
+      <div id="dl-task-info" style="background:var(--bg3);border-radius:8px;padding:12px 14px;font-size:13px;color:var(--text2)"></div>
+      <div class="form-group">
+        <label>Deadline Date</label>
+        <input type="date" id="dl-date" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:11px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;width:100%">
+      </div>
+      <div class="form-group">
+        <label>Note to Employee (optional)</label>
+        <textarea id="dl-note" placeholder="Remind them what's due or priority level…" style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius2);padding:11px 14px;color:var(--text);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;width:100%;resize:vertical;min-height:60px"></textarea>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal('modal-deadline')">Cancel</button>
+      <button class="btn btn-danger btn-sm" onclick="clearDeadline()" style="margin-right:auto">Remove</button>
+      <button class="btn btn-primary" onclick="saveDeadline()" style="justify-content:center">Save Deadline</button>
+    </div>
+  </div>
+</div>
 
 <div id="modal-share-leads" class="modal-bg" style="display:none" onclick="if(event.target===this)closeModal('modal-share-leads')">
   <div class="modal" style="max-width:480px">
